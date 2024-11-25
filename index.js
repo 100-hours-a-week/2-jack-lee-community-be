@@ -26,18 +26,11 @@ const upload = multer({ dest: 'data/' });
 app.use(express.json()); // JSON 요청 파싱
 app.use(bodyParser.json());
 app.use(express.static('public')); // 클라이언트 HTML 파일 제공
+app.use(cors()); // cors 설정
 
 app.use('/users', userRoutes);
 //app.use('/posts', postRoutes);
 
-// CORS 설정: 모든 Origin 허용
-const corsOptions = {
-    origin: '*', // 모든 Origin 허용
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // 허용할 HTTP 메서드
-    allowedHeaders: ['Content-Type', 'Authorization'], // 허용할 헤더
-};
-
-app.use(cors(corsOptions)); // CORS 미들웨어 적용
 app.use(express.json()); // JSON 요청 파싱
 
 app.listen(PORT, () => {
