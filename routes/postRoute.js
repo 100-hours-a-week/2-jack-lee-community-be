@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const postController = require('../controllers/postController');
+const { postImageUpload } = require('../utils/fileUpload');
 
 // 게시글 목록 정보 조회
 router.get('', postController.getPostList);
@@ -28,5 +29,12 @@ router.patch('/:post_id/comments/:comment_id', postController.updateComment);
 
 // 댓글 삭제
 router.delete('/:post_id/comments/:comment_id', postController.deleteComment);
+
+// 게시글 이미지 업로드
+router.post(
+    '/:post_id/post-image',
+    postImageUpload.single('post_image'),
+    postController.uploadPostImage,
+);
 
 module.exports = router;

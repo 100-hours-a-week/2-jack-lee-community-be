@@ -1,3 +1,4 @@
+const fs = require('fs');
 const postModel = require('../models/postModel');
 const formatDateTime = require('../utils/utils');
 
@@ -176,6 +177,30 @@ const deleteComment = (req, res) => {
     res.status(200).json({ message: 'comment_deleted_successfully' });
 };
 
+// 이미지 업로드 및 경로 업데이트
+const uploadPostImage = (req, res) => {
+    const { post_id } = req.params;
+
+    if (!req.file) {
+        return res.status(400).json({ message: 'invalid_image_file_request' });
+    }
+
+    const imagePath = `/data/post-images/${req.file.filename}`;
+
+    const updatedPost = postModel.updatePostImage(post_id, imagePath);
+    console.log(updatePost);
+    if (!updatedPost) {
+        // 이미지 파일 삭제
+        fs.unlinkSync(req.file.path);
+        return res.status(404).json({ message: 'image_file_upload_failed' });
+    }
+
+    res.status(200).json({
+        message: 'post_image_uploaded_successfully',
+        data: updatedPost,
+    });
+};
+
 module.exports = {
     savePost,
     getPostList,
@@ -186,4 +211,5 @@ module.exports = {
     getComments,
     updateComment,
     deleteComment,
+    uploadPostImage,
 };

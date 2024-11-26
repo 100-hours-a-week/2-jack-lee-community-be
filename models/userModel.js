@@ -136,6 +136,17 @@ const userModel = {
         nickname = nickname.replace(/['"]+/g, ''); // 따옴표 제거
         return users.some((user) => user.nickname === nickname); // 중복된 닉네임이 있으면 true, 없으면 false
     },
+    updateProfileImage: async (id, profileImage) => {
+        const users = await readUserFile();
+        const user = users.find((user) => user.id === parseInt(id, 10));
+
+        if (!user) return null;
+
+        // 자바스크립트의 객체 참조 방식으로 인해, user 값을 변경하면 users 배열의 값도 바뀐다.
+        user.profile_image = profileImage;
+        await writeUserFile(users);
+        return user;
+    },
 };
 
 module.exports = userModel;

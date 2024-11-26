@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
+const { profileImageUpload } = require('../utils/fileUpload');
 
 // 이메일 중복 체크
 router.get('/check-email', userController.checkEmailDuplicate);
@@ -28,5 +29,12 @@ router.delete('/:id', userController.deleteUser);
 
 // 로그인
 // router.post('/login', userController.login);
+
+// 프로필 이미지 업로드
+router.post(
+    '/:user_id/profile-image',
+    profileImageUpload.single('profile_image'),
+    userController.uploadProfileImage,
+);
 
 module.exports = router;

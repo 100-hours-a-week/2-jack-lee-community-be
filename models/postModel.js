@@ -172,6 +172,19 @@ const postModel = {
         this.saveAllPosts(posts);
         return true;
     },
+
+    // 게시글 이미지 경로 업데이트
+    updatePostImage(postId, imagePath) {
+        const posts = this.getAllPosts();
+        const post = posts.find((p) => p.post_id === postId);
+
+        if (!post) return null;
+
+        post.post_image = imagePath;
+
+        this.saveAllPosts(posts);
+        return post;
+    },
 };
 
 module.exports = postModel;

@@ -1,3 +1,4 @@
+const fs = require('fs');
 const userModel = require('../models/userModel');
 
 // 모든 사용자 가져오기
@@ -68,9 +69,7 @@ const addUser = async (req, res) => {
             req.body;
         // 입력 데이터 검증
         if (!email || !password || !nickname || password !== re_password) {
-            return res
-                .status(400)
-                .json({ message: '회원정보를 다시 입력해주세요.' });
+            return res.status(400).json({ message: 'invaild_input' });
         }
 
         // 유저 생성
@@ -82,7 +81,7 @@ const addUser = async (req, res) => {
         });
 
         res.status(201).json({
-            message: '회원가입 성공',
+            message: 'user_created_successfully',
             data: newUser,
         });
     } catch (error) {
@@ -245,6 +244,33 @@ const checkNicknameDuplicate = async (req, res) => {
     }
 };
 
+// 이미지 업로드 및 경로 업데이트
+const uploadProfileImage = async (req, res) => {
+    const { user_id } = req.params;
+
+    if (!req.file) {
+        return res.status(400).json({ message: 'invalid_image_file_request' });
+    }
+
+    const imagePath = `/data/profile-images/${req.file.filename}`;
+
+    const updatedProfile = await userModel.updateProfileImage(
+        user_id,
+        imagePath,
+    );
+    console.log(updatedProfile);
+    if (!updatedProfile) {
+        // 이미지 파일 삭제
+        fs.unlinkSync(req.file.path);
+        return res.status(404).json({ message: 'image_file_upload_failed' });
+    }
+
+    res.status(200).json({
+        message: 'profile_image_uploaded_successfully',
+        data: updatedProfile,
+    });
+};
+
 module.exports = {
     getAllUsers,
     getUserById,
@@ -255,4 +281,5 @@ module.exports = {
     changePassword,
     checkEmailDuplicate,
     checkNicknameDuplicate,
+    uploadProfileImage,
 };
