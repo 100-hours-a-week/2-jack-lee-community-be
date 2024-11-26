@@ -19,5 +19,12 @@
     "nickname": "gumo",
     "profile_image": "test.jpg",
     "id": 4
+  },
+  {
+    "email": "ttest@asdsa.com",
+    "password": "Qwer1234!",
+    "nickname": "catman",
+    "profile_image": "C:\\fakepath\\고양이.jpg",
+    "id": 5
   }
 ]

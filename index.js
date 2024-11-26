@@ -29,7 +29,7 @@ app.use(express.static('public')); // 클라이언트 HTML 파일 제공
 app.use(cors()); // cors 설정
 
 app.use('/users', userRoutes);
-//app.use('/posts', postRoutes);
+app.use('/posts', postRoutes);
 
 app.use(express.json()); // JSON 요청 파싱
 

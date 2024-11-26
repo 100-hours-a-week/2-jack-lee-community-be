@@ -1,0 +1,56 @@
+{
+  "data": [
+    {
+      "post_id": "8ad0aaca-7cbe-4390-be78-4081976b2f18",
+      "post_title": "게시글 제목",
+      "post_content": "게시글 내용입니다...",
+      "post_image": "https://image.kr/img.jpg",
+      "author": {
+        "id": null,
+        "name": null,
+        "profile_image": null
+      },
+      "created_at": "2024-11-26 15:35:16",
+      "likes": null,
+      "comments": null,
+      "views": null,
+      "comments_info": [
+        {
+          "comment_id": "8ada9650-3e01-4d4e-bd00-4e57d66193a3",
+          "comment_content": "ㅋㅋㅋ",
+          "comment_created_at": "2024-11-26 15:37:16",
+          "comment_author": {
+            "id": null,
+            "name": null,
+            "profile_image": null
+          }
+        },
+        {
+          "comment_id": "dc44e3ed-067a-461b-a5e8-d8e3c1cb23a3",
+          "comment_content": "gggg",
+          "comment_created_at": "2024-11-26 15:38:07",
+          "comment_author": {
+            "id": "test123",
+            "name": "tttteeeesssttt",
+            "profile_image": "test.jpg"
+          }
+        }
+      ]
+    },
+    {
+      "post_id": "4d61f4db-b5d4-4f03-bb1a-b20fa5f86a87",
+      "post_title": "게시글 제목2",
+      "post_content": "게시글 내용입니다...22",
+      "post_image": "https://image.kr/img22.jpg",
+      "author": {
+        "id": null,
+        "name": null,
+        "profile_image": null
+      },
+      "created_at": "2024-11-26 15:35:23",
+      "likes": null,
+      "comments": [],
+      "views": null
+    }
+  ]
+}

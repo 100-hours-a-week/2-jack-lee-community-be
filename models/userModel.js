@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// JSON 파일 경로 설정 - user 관련 json 파일은 data/users.json에 저장
+// JSON 파일 경로 설정 - 사용자 관련 json 파일은 data/users.json에 저장
 const userFilePath = path.join(__dirname, '../data/users.json');
 
 // JSON 파일 읽기
@@ -56,22 +56,15 @@ const userModel = {
     },
     addUser: async (newUser) => {
         let users = await readUserFile(); // 파일에서 데이터 읽기
-
         if (!users) {
             users = [];
         }
-
         // ID 생성
         newUser.id = users.length ? users[users.length - 1].id + 1 : 1;
-
         // 불필요한 필드 제거
         delete newUser.re_password;
-
-        console.log('1.', users);
         // 새 사용자 추가
         users.push(newUser);
-        console.log('2.', users);
-
         writeUserFile(users); // 업데이트된 데이터를 파일에 저장
 
         return newUser; // 추가된 사용자 반환
