@@ -63,12 +63,12 @@ const postModel = {
             return null; // 게시글이 없으면 null 반환
         }
 
-        // 게시글 제목, 내용, 이미지만 수정 가능
-        const { post_title, post_content, post_image } = updatedData;
-        if (post_title !== undefined) posts[postIndex].post_title = post_title;
-        if (post_content !== undefined)
-            posts[postIndex].post_content = post_content;
-        if (post_image !== undefined) posts[postIndex].post_image = post_image;
+        // 게시글 제목, 내용만 수정 가능
+        // 주의! updatedData의 속성명과 여기서 받는 변수명이 다르면 안됨
+        const { postTitle, postContent } = updatedData;
+        if (postTitle !== undefined) posts[postIndex].post_title = postTitle;
+        if (postContent !== undefined)
+            posts[postIndex].post_content = postContent;
 
         this.saveAllPosts(posts);
         return posts[postIndex];
@@ -174,13 +174,15 @@ const postModel = {
     },
 
     // 게시글 이미지 경로 업데이트
-    updatePostImage(postId, imagePath) {
+    updatePostImage(postId, imagePath, imageFileName) {
         const posts = this.getAllPosts();
         const post = posts.find((p) => p.post_id === postId);
 
         if (!post) return null;
+        console.log('post:', post);
 
         post.post_image = imagePath;
+        post.post_image_name = imageFileName;
 
         this.saveAllPosts(posts);
         return post;

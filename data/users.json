@@ -1,30 +1,30 @@
 [
   {
-    "email": "asfasqad@naver.com",
-    "password": "Zxcv12344!",
-    "nickname": "gumo",
-    "profile_image": "/data/profile-images/profile_image-1732628982157-822731366.jpg",
-    "id": 1
+    "email": "test1234@gmail.com",
+    "password": "Qwer1234!",
+    "nickname": "CatMan",
+    "id": "59600308-32ce-4828-bab3-a06160446544",
+    "profile_image": "/data/profile-images/profile_image-1732768394727-205768508.jpg"
   },
   {
-    "email": "zxvcvzxvzx@naver.com",
-    "password": "qwer1234!",
-    "nickname": "gumo",
-    "profile_image": "test.jpg",
-    "id": 3
-  },
-  {
-    "email": "zxvcvfdgfdhfzxvzx@naver.com",
-    "password": "qwer1234!",
-    "nickname": "gumo",
-    "profile_image": "test.jpg",
-    "id": 4
+    "email": "skjack@naver.com",
+    "password": "Zxcv1234!",
+    "nickname": "JACK",
+    "id": "8e1103aa-2b1c-42f8-842a-570bb3647000",
+    "profile_image": "/data/profile-images/profile_image-1732768765569-530022584.jpg"
   },
   {
     "email": "ttest@asdsa.com",
-    "password": "Qwer1234!",
-    "nickname": "catman",
-    "profile_image": "C:\\fakepath\\고양이.jpg",
-    "id": 5
+    "password": "Asdf1234!",
+    "nickname": "QWERman",
+    "id": "770cb3e3-8c0b-496a-87fa-bf59828660b1",
+    "profile_image": "/data/profile-images/profile_image-1732769316614-330969272.jpg"
+  },
+  {
+    "email": "zxcv1234@zxc.com",
+    "password": "qWER1234!",
+    "nickname": "zzxcc",
+    "id": "a7a20eac-b6d8-4cd3-8ebd-34cea89feb53",
+    "profile_image": "/data/profile-images/profile_image-1732769460008-321260737.jpg"
   }
 ]

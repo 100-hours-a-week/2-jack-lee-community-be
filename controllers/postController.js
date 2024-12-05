@@ -34,9 +34,9 @@ const getPostDetail = (req, res) => {
 };
 // 새로운 게시글 저장
 const savePost = (req, res) => {
-    const { post_title, post_content, post_image } = req.body;
+    const { post_title, post_content } = req.body;
 
-    if (!post_title || !post_content || !post_image) {
+    if (!post_title || !post_content) {
         return res.status(400).json({
             message: 'invaild_input',
         });
@@ -45,16 +45,17 @@ const savePost = (req, res) => {
     const newPost = {
         post_title,
         post_content,
-        post_image,
+        post_image: null,
+        post_image_name: null,
         author: {
             id: null,
             name: null,
             profile_image: null,
         },
         created_at: formatDateTime(),
-        likes: null,
-        comments: null,
-        views: null,
+        likes: 0,
+        comments: 0,
+        views: 0,
     };
 
     const savedPost = postModel.addPost(newPost);
@@ -129,10 +130,6 @@ const getComments = (req, res) => {
 
     const comments = postModel.getCommentsByPostId(post_id);
 
-    if (!comments) {
-        return res.status(404).json({ message: 'comment_not_found' });
-    }
-
     res.status(200).json({
         message: 'comments_retrieved_successfully',
         data: comments,
@@ -181,14 +178,23 @@ const deleteComment = (req, res) => {
 const uploadPostImage = (req, res) => {
     const { post_id } = req.params;
 
+    console.log(req.body);
+
     if (!req.file) {
         return res.status(400).json({ message: 'invalid_image_file_request' });
     }
 
+    // 게시글 이미지 저장 경로
     const imagePath = `/data/post-images/${req.file.filename}`;
+    // 게시글 이미지 파일 이름
+    const imageFileName = req.body.post_image_name;
 
-    const updatedPost = postModel.updatePostImage(post_id, imagePath);
-    console.log(updatePost);
+    const updatedPost = postModel.updatePostImage(
+        post_id,
+        imagePath,
+        imageFileName,
+    );
+
     if (!updatedPost) {
         // 이미지 파일 삭제
         fs.unlinkSync(req.file.path);

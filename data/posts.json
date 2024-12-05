@@ -1,56 +1,74 @@
 {
   "data": [
     {
-      "post_id": "8ad0aaca-7cbe-4390-be78-4081976b2f18",
-      "post_title": "게시글 제목",
-      "post_content": "게시글 내용입니다...",
-      "post_image": "/data/post-images/post_image-1732629815546-870445933.jpg",
+      "post_id": "88a4d99c-ce11-4885-a2f5-14cd80a038aa",
+      "post_title": "zzzzzzz",
+      "post_content": "xxxxxxxxxxx",
+      "post_image": "/data/post-images/post_image-1733277426523-605629269.jpg",
+      "post_image_name": "고양이.jpg",
       "author": {
         "id": null,
         "name": null,
         "profile_image": null
       },
-      "created_at": "2024-11-26 15:35:16",
-      "likes": null,
-      "comments": null,
-      "views": null,
+      "created_at": "2024-12-04 10:57:06",
+      "likes": 0,
+      "comments": 0,
+      "views": 0,
       "comments_info": [
         {
-          "comment_id": "8ada9650-3e01-4d4e-bd00-4e57d66193a3",
-          "comment_content": "ㅋㅋㅋ",
-          "comment_created_at": "2024-11-26 15:37:16",
+          "comment_id": "ba297fec-625b-4374-b92f-6d2e1daa5ffc",
+          "comment_content": "ㅋㅋㅋㅊㅌㅊㅌㅊ",
+          "comment_created_at": "2024-12-05 17:50:22",
           "comment_author": {
-            "id": null,
-            "name": null,
-            "profile_image": null
+            "id": "abc1234",
+            "name": "Jack",
+            "profile_image": "../images/고양이.jpg"
           }
         },
         {
-          "comment_id": "dc44e3ed-067a-461b-a5e8-d8e3c1cb23a3",
-          "comment_content": "gggg",
-          "comment_created_at": "2024-11-26 15:38:07",
+          "comment_id": "70b24885-b4d2-4550-aab2-8a43fdabce50",
+          "comment_content": "ㅋㅋㅋㅌㅋㅊㅌ",
+          "comment_created_at": "2024-12-05 17:50:27",
           "comment_author": {
-            "id": "test123",
-            "name": "tttteeeesssttt",
-            "profile_image": "test.jpg"
+            "id": "abc1234",
+            "name": "Jack",
+            "profile_image": "../images/고양이.jpg"
           }
         }
       ]
     },
     {
-      "post_id": "4d61f4db-b5d4-4f03-bb1a-b20fa5f86a87",
-      "post_title": "게시글 제목2",
-      "post_content": "게시글 내용입니다...22",
-      "post_image": "https://image.kr/img22.jpg",
+      "post_id": "8858576d-510a-4a6c-9836-7a4a0c00e65d",
+      "post_title": "test",
+      "post_content": "testssss",
+      "post_image": "/data/post-images/post_image-1733278825438-768907612.jpg",
+      "post_image_name": "다람쥐.jpg",
       "author": {
         "id": null,
         "name": null,
         "profile_image": null
       },
-      "created_at": "2024-11-26 15:35:23",
-      "likes": null,
-      "comments": [],
-      "views": null
+      "created_at": "2024-12-04 11:20:25",
+      "likes": 0,
+      "comments": 0,
+      "views": 0
+    },
+    {
+      "post_id": "3d9a9a07-8831-4431-b8da-34b238a1422f",
+      "post_title": "dsadas",
+      "post_content": "dsadsadd",
+      "post_image": "/data/post-images/post_image-1733279094994-569697992.jpg",
+      "post_image_name": "징징이커피.jpg",
+      "author": {
+        "id": null,
+        "name": null,
+        "profile_image": null
+      },
+      "created_at": "2024-12-04 11:24:54",
+      "likes": 0,
+      "comments": 0,
+      "views": 0
     }
   ]
 }

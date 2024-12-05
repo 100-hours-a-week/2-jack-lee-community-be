@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+const formatDateTime = require('../utils/utils');
 
 // JSON 파일 경로 설정 - 사용자 관련 json 파일은 data/users.json에 저장
 const userFilePath = path.join(__dirname, '../data/users.json');
@@ -60,7 +62,7 @@ const userModel = {
             users = [];
         }
         // ID 생성
-        newUser.id = users.length ? users[users.length - 1].id + 1 : 1;
+        newUser.id = uuidv4();
         // 불필요한 필드 제거
         delete newUser.re_password;
         // 새 사용자 추가
@@ -136,9 +138,9 @@ const userModel = {
         nickname = nickname.replace(/['"]+/g, ''); // 따옴표 제거
         return users.some((user) => user.nickname === nickname); // 중복된 닉네임이 있으면 true, 없으면 false
     },
-    updateProfileImage: async (id, profileImage) => {
+    updateProfileImage: async (userId, profileImage) => {
         const users = await readUserFile();
-        const user = users.find((user) => user.id === parseInt(id, 10));
+        const user = users.find((user) => user.id === userId);
 
         if (!user) return null;
 
