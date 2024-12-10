@@ -37,4 +37,31 @@ router.post(
     postController.uploadPostImage,
 );
 
+// 좋아요 수 증가
+router.post('/:post_id/likes_add', postController.addLikesCount);
+
+// 좋아요 수 감소
+router.post('/:post_id/likes_decrease', postController.addLikesCount);
+
+// 좋아요 수 조회
+router.get('/:post_id/likes', postController.getLikesCount);
+
+// 조회 수 증가
+router.post('/:post_id/views', postController.addViewsCount);
+
+// 조회 수 조회
+router.get('/:post_id/views', postController.getViewsCount);
+
+// 댓글 수 증가
+router.post('/:post_id/comments_add', postController.addCommentsCount);
+
+// 댓글 수 감소
+router.post(
+    '/:post_id/comments_decrease',
+    postController.decreaseCommentsCount,
+);
+
+// 댓글 수 조회
+router.get('/:post_id/comments_count', postController.getCommentsCount);
+
 module.exports = router;

@@ -179,13 +179,108 @@ const postModel = {
         const post = posts.find((p) => p.post_id === postId);
 
         if (!post) return null;
-        console.log('post:', post);
 
         post.post_image = imagePath;
         post.post_image_name = imageFileName;
 
         this.saveAllPosts(posts);
         return post;
+    },
+
+    // 좋아요 수 증가
+    addLikes(postId) {
+        const posts = this.getAllPosts();
+        const post = posts.find((p) => p.post_id === postId);
+
+        if (!post) return null;
+
+        if (typeof post.likes !== 'number') {
+            post.likes = 0;
+        }
+
+        post.likes += 1;
+        this.saveAllPosts(posts);
+        return post;
+    },
+    // 좋아요 수 조회
+    getLikes(postId) {
+        const posts = this.getAllPosts();
+        const post = posts.find((p) => p.post_id === postId);
+
+        if (!post) return null;
+
+        if (typeof post.likes !== 'number') {
+            console.error('좋아요 수가 숫자형이 아님');
+        }
+
+        return post.likes;
+    },
+    // 조회 수 증가
+    addViews(postId) {
+        const posts = this.getAllPosts();
+        const post = posts.find((p) => p.post_id === postId);
+
+        if (!post) return null;
+
+        if (typeof post.views !== 'number') {
+            post.views = 0;
+        }
+
+        post.views += 1;
+        this.saveAllPosts(posts);
+        return post;
+    },
+    // 조회 수 조회
+    getViews(postId) {
+        const posts = this.getAllPosts();
+        const post = posts.find((p) => p.post_id === postId);
+
+        if (!post) return null;
+
+        if (typeof post.views !== 'number') {
+            console.error('조회수가 숫자형이 아님');
+        }
+
+        return post.views;
+    },
+    // 댓글 수 증가
+    addcomments(postId) {
+        const posts = this.getAllPosts();
+        const post = posts.find((p) => p.post_id === postId);
+
+        if (!post) return null;
+
+        if (typeof post.comments !== 'number') {
+            post.comments = 0;
+        }
+
+        post.comments += 1;
+        this.saveAllPosts(posts);
+        return post;
+    },
+    // 댓글 수 감소
+    decreaseComments(postId) {
+        const posts = this.getAllPosts();
+        const post = posts.find((p) => p.post_id === postId);
+
+        if (!post) return null;
+
+        if (typeof post.comments !== 'number') {
+            post.comments = 0;
+        }
+
+        post.comments -= 1;
+        this.saveAllPosts(posts);
+        return post;
+    },
+    // 댓글 수 조회
+    getComments(postId) {
+        const posts = this.getAllPosts();
+        const post = posts.find((p) => p.post_id === postId);
+
+        if (!post) return null;
+
+        return post.comments_info.length;
     },
 };
 

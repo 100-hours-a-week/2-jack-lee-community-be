@@ -1,35 +1,25 @@
 {
   "data": [
     {
-      "post_id": "88a4d99c-ce11-4885-a2f5-14cd80a038aa",
-      "post_title": "zzzzzzz",
-      "post_content": "xxxxxxxxxxx",
-      "post_image": "/data/post-images/post_image-1733277426523-605629269.jpg",
-      "post_image_name": "고양이.jpg",
+      "post_id": "dda0e885-c00c-4322-b964-248890e0366c",
+      "post_title": "ㅋㅋㅋ",
+      "post_content": "ㄴㄴㄴㄴ",
+      "post_image": "/data/post-images/post_image-1733833220083-279705527.jpg",
+      "post_image_name": "라쿤.jpg",
       "author": {
         "id": null,
         "name": null,
         "profile_image": null
       },
-      "created_at": "2024-12-04 10:57:06",
-      "likes": 0,
-      "comments": 0,
-      "views": 0,
+      "created_at": "2024-12-10 21:20:20",
+      "likes": 4,
+      "comments": 1,
+      "views": 11,
       "comments_info": [
         {
-          "comment_id": "ba297fec-625b-4374-b92f-6d2e1daa5ffc",
-          "comment_content": "ㅋㅋㅋㅊㅌㅊㅌㅊ",
-          "comment_created_at": "2024-12-05 17:50:22",
-          "comment_author": {
-            "id": "abc1234",
-            "name": "Jack",
-            "profile_image": "../images/고양이.jpg"
-          }
-        },
-        {
-          "comment_id": "70b24885-b4d2-4550-aab2-8a43fdabce50",
-          "comment_content": "ㅋㅋㅋㅌㅋㅊㅌ",
-          "comment_created_at": "2024-12-05 17:50:27",
+          "comment_id": "adeb98bb-8060-41b7-9af3-aa3214b489ce",
+          "comment_content": "ㅋㅋ",
+          "comment_created_at": "2024-12-10 21:26:33",
           "comment_author": {
             "id": "abc1234",
             "name": "Jack",
@@ -37,38 +27,6 @@
           }
         }
       ]
-    },
-    {
-      "post_id": "8858576d-510a-4a6c-9836-7a4a0c00e65d",
-      "post_title": "test",
-      "post_content": "testssss",
-      "post_image": "/data/post-images/post_image-1733278825438-768907612.jpg",
-      "post_image_name": "다람쥐.jpg",
-      "author": {
-        "id": null,
-        "name": null,
-        "profile_image": null
-      },
-      "created_at": "2024-12-04 11:20:25",
-      "likes": 0,
-      "comments": 0,
-      "views": 0
-    },
-    {
-      "post_id": "3d9a9a07-8831-4431-b8da-34b238a1422f",
-      "post_title": "dsadas",
-      "post_content": "dsadsadd",
-      "post_image": "/data/post-images/post_image-1733279094994-569697992.jpg",
-      "post_image_name": "징징이커피.jpg",
-      "author": {
-        "id": null,
-        "name": null,
-        "profile_image": null
-      },
-      "created_at": "2024-12-04 11:24:54",
-      "likes": 0,
-      "comments": 0,
-      "views": 0
     }
   ]
 }

@@ -96,7 +96,7 @@ const deletePost = (req, res) => {
     res.status(200).json({ message: 'Post deleted successfully' });
 };
 
-// 댓글 추가
+// 댓글 수 증가
 const addComment = (req, res) => {
     const { post_id } = req.params;
     const { comment_content, comment_author } = req.body;
@@ -207,6 +207,101 @@ const uploadPostImage = (req, res) => {
     });
 };
 
+// 좋아요 수 증가
+const addLikesCount = (req, res) => {
+    const { post_id } = req.params;
+
+    const updatedElement = postModel.addLikes(post_id);
+
+    if (!updatedElement) {
+        return res.status(404).json({ message: 'posts_not_found' });
+    }
+
+    res.status(200).json({
+        message: 'likes_updated_successfully',
+        data: updatedElement,
+    });
+};
+
+// 좋아요 수 조회
+const getLikesCount = (req, res) => {
+    const { post_id } = req.params;
+
+    const likes = postModel.getLikes(post_id);
+
+    res.status(200).json({
+        message: 'likes_retrieved_successfully',
+        data: likes,
+    });
+};
+// 조회수 증가
+const addViewsCount = (req, res) => {
+    const { post_id } = req.params;
+
+    const views = postModel.addViews(post_id);
+
+    if (!views) {
+        return res.status(404).json({ message: 'posts_not_found' });
+    }
+
+    res.status(200).json({
+        message: 'views_updated_successfully',
+        data: views,
+    });
+};
+// 조회수 조회
+const getViewsCount = (req, res) => {
+    const { post_id } = req.params;
+
+    const views = postModel.getViews(post_id);
+
+    res.status(200).json({
+        message: 'views_retrieved_successfully',
+        data: views,
+    });
+};
+// 댓글 수 증가
+const addCommentsCount = (req, res) => {
+    const { post_id } = req.params;
+
+    const comments = postModel.addcomments(post_id);
+
+    if (!comments) {
+        return res.status(404).json({ message: 'posts_not_found' });
+    }
+
+    res.status(200).json({
+        message: 'comments_updated_successfully',
+        data: comments,
+    });
+};
+// 댓글 수 감소
+const decreaseCommentsCount = (req, res) => {
+    const { post_id } = req.params;
+
+    const comments = postModel.decreaseComments(post_id);
+
+    if (!comments) {
+        return res.status(404).json({ message: 'posts_not_found' });
+    }
+
+    res.status(200).json({
+        message: 'comments_updated_successfully',
+        data: comments,
+    });
+};
+// 댓글수 조회
+const getCommentsCount = (req, res) => {
+    const { post_id } = req.params;
+
+    const comments = postModel.getComments(post_id);
+
+    res.status(200).json({
+        message: 'comments_retrieved_successfully',
+        data: comments,
+    });
+};
+
 module.exports = {
     savePost,
     getPostList,
@@ -218,4 +313,11 @@ module.exports = {
     updateComment,
     deleteComment,
     uploadPostImage,
+    addLikesCount,
+    getLikesCount,
+    addViewsCount,
+    getViewsCount,
+    addCommentsCount,
+    decreaseCommentsCount,
+    getCommentsCount,
 };
