@@ -15,6 +15,9 @@ router.get('', userController.getAllUsers);
 // id로 특정 사용자 정보 조회
 router.get('/:id', userController.getUserById);
 
+// email로 특정 사용자 정보 조회
+router.get('/e/:email', userController.getUserByEmail);
+
 // 회원가입
 router.post('/register', userController.addUser);
 

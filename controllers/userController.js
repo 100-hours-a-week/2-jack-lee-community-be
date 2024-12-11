@@ -17,8 +17,9 @@ const getAllUsers = async (req, res) => {
 // ID로 사용자 가져오기
 const getUserById = async (req, res) => {
     try {
-        const id = parseInt(req.params.id, 10); // 요청의 ID 파라미터
-        if (isNaN(id)) {
+        const id = req.params.id; // 요청의 ID 파라미터
+
+        if (!id) {
             return res.status(400).json({ message: 'Invalid user ID' }); // 잘못된 요청
         }
 
@@ -39,7 +40,7 @@ const getUserById = async (req, res) => {
 // 이메일로 사용자 가져오기
 const getUserByEmail = async (req, res) => {
     try {
-        const { email } = req.query; // 쿼리에서 이메일 가져오기
+        const { email } = req.params;
         if (!email) {
             return res
                 .status(400)
@@ -95,8 +96,8 @@ const addUser = async (req, res) => {
 // 사용자 업데이트
 const updateUser = async (req, res) => {
     try {
-        const id = parseInt(req.params.id, 10);
-        if (isNaN(id)) {
+        const id = req.params.id;
+        if (!id) {
             return res.status(400).json({ message: 'Invalid user ID' });
         }
 
@@ -123,8 +124,8 @@ const updateUser = async (req, res) => {
 // 사용자 삭제
 const deleteUser = async (req, res) => {
     try {
-        const id = parseInt(req.params.id, 10);
-        if (isNaN(id)) {
+        const id = req.params.id;
+        if (!id) {
             return res.status(400).json({ message: 'Invalid user ID' });
         }
 
@@ -147,11 +148,11 @@ const deleteUser = async (req, res) => {
 // 비밀번호 변경
 const changePassword = async (req, res) => {
     try {
-        const id = parseInt(req.params.id, 10);
+        const id = req.params.id;
         const { password, re_password } = req.body;
 
         // 요청 데이터 검증
-        if (isNaN(id)) {
+        if (!id) {
             return res.status(400).json({ message: 'Invalid user ID' });
         }
 

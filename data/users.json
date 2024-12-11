@@ -1,8 +1,8 @@
 [
   {
     "email": "test1234@gmail.com",
-    "password": "Qwer1234!",
-    "nickname": "CatMan",
+    "password": "modify1234",
+    "nickname": "수정된 닉네임",
     "id": "59600308-32ce-4828-bab3-a06160446544",
     "profile_image": "/data/profile-images/profile_image-1732768394727-205768508.jpg"
   },
@@ -19,12 +19,5 @@
     "nickname": "QWERman",
     "id": "770cb3e3-8c0b-496a-87fa-bf59828660b1",
     "profile_image": "/data/profile-images/profile_image-1732769316614-330969272.jpg"
-  },
-  {
-    "email": "zxcv1234@zxc.com",
-    "password": "qWER1234!",
-    "nickname": "zzxcc",
-    "id": "a7a20eac-b6d8-4cd3-8ebd-34cea89feb53",
-    "profile_image": "/data/profile-images/profile_image-1732769460008-321260737.jpg"
   }
 ]
