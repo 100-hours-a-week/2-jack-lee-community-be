@@ -1,5 +1,6 @@
 const fs = require('fs');
 const postModel = require('../models/postModel');
+const userModel = require('../models/userModel');
 const formatDateTime = require('../utils/utils');
 
 // 게시글 목록 가져오기
@@ -33,7 +34,7 @@ const getPostDetail = (req, res) => {
     res.json({ status: 200, data: post });
 };
 // 새로운 게시글 저장
-const savePost = (req, res) => {
+const savePost = async (req, res) => {
     const { post_title, post_content } = req.body;
 
     if (!post_title || !post_content) {
@@ -42,15 +43,21 @@ const savePost = (req, res) => {
         });
     }
 
+    const userId = req.cookies.userId; // 쿠키에서 userId 추출
+    const userData = await userModel.getUserById(userId);
+    console.log('userData: ', userData);
+    const userNickname = userData.nickname;
+    const userProfileImage = userData.profile_image;
+
     const newPost = {
         post_title,
         post_content,
         post_image: null,
         post_image_name: null,
         author: {
-            id: null,
-            name: null,
-            profile_image: null,
+            id: userId,
+            name: userNickname,
+            profile_image: userProfileImage,
         },
         created_at: formatDateTime(),
         likes: 0,
@@ -178,14 +185,12 @@ const deleteComment = (req, res) => {
 const uploadPostImage = (req, res) => {
     const { post_id } = req.params;
 
-    console.log(req.body);
-
     if (!req.file) {
         return res.status(400).json({ message: 'invalid_image_file_request' });
     }
 
     // 게시글 이미지 저장 경로
-    const imagePath = `/data/post-images/${req.file.filename}`;
+    const imagePath = `http://localhost:3000/post-images/${req.file.filename}`;
     // 게시글 이미지 파일 이름
     const imageFileName = req.body.post_image_name;
 

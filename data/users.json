@@ -1,23 +1,9 @@
 [
-  {
-    "email": "test1234@gmail.com",
-    "password": "modify1234",
-    "nickname": "수정된 닉네임",
-    "id": "59600308-32ce-4828-bab3-a06160446544",
-    "profile_image": "/data/profile-images/profile_image-1732768394727-205768508.jpg"
-  },
-  {
-    "email": "skjack@naver.com",
-    "password": "Zxcv1234!",
-    "nickname": "JACK",
-    "id": "8e1103aa-2b1c-42f8-842a-570bb3647000",
-    "profile_image": "/data/profile-images/profile_image-1732768765569-530022584.jpg"
-  },
-  {
-    "email": "ttest@asdsa.com",
-    "password": "Asdf1234!",
-    "nickname": "QWERman",
-    "id": "770cb3e3-8c0b-496a-87fa-bf59828660b1",
-    "profile_image": "/data/profile-images/profile_image-1732769316614-330969272.jpg"
-  }
+    {
+        "email": "aaaa1234@naver.com",
+        "password": "3bd3dad0b600c59101c8cdfaa5724fddac8b9ce3a06911c472c8fd83acbde693",
+        "nickname": "aaaa",
+        "id": "7f44a230-f095-4bee-819a-c9721effa38c",
+        "profile_image": "http://localhost:3000/profile-images/profile_image-1734337920191-357046799.jpg"
+    }
 ]

@@ -253,13 +253,13 @@ const uploadProfileImage = async (req, res) => {
         return res.status(400).json({ message: 'invalid_image_file_request' });
     }
 
-    const imagePath = `/data/profile-images/${req.file.filename}`;
+    const imagePath = `http://localhost:3000/profile-images/${req.file.filename}`;
 
     const updatedProfile = await userModel.updateProfileImage(
         user_id,
         imagePath,
     );
-    console.log(updatedProfile);
+
     if (!updatedProfile) {
         // 이미지 파일 삭제
         fs.unlinkSync(req.file.path);

@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const formatDateTime = require('../utils/utils');
+const crypto = require('crypto');
 
 // JSON 파일 경로 설정 - 사용자 관련 json 파일은 data/users.json에 저장
 const userFilePath = path.join(__dirname, '../data/users.json');
@@ -39,8 +40,24 @@ const writeUserFile = async (userData) => {
     }
 };
 
+// 비밀번호 해싱
+const hashPassword = (password) => {
+    return crypto.createHash('sha256').update(password).digest('hex');
+};
+
 // userModel 객체 리터럴
 const userModel = {
+    // 인증, 입력받은 email로 사용자를 찾은 다음 비밀번호가 일치하면 비밀번호를 제외한 사용자 정보 반환
+    validateUser: async (email, password) => {
+        const user = await userModel.getUserByEmail(email);
+
+        if (user && user.password === hashPassword(password)) {
+            const { password, ...userWithoutPassword } = user;
+            return userWithoutPassword;
+        }
+
+        return null;
+    },
     getAllUsers: async () => await readUserFile(),
     getUserById: async (id) => {
         const users = await readUserFile(); // 파일에서 데이터 읽기
@@ -63,6 +80,8 @@ const userModel = {
         }
         // ID 생성
         newUser.id = uuidv4();
+        // 비밀번호 해싱
+        newUser.password = hashPassword(newUser.password);
         // 불필요한 필드 제거
         delete newUser.re_password;
         // 새 사용자 추가

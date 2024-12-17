@@ -1,40 +1,44 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const multer = require('multer');
-const fs = require('fs');
 const path = require('path');
-const cors = require('cors');
 
+// 라우터
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoute');
+const authRoutes = require('./routes/authRoute');
 
-// JSON 파일 및 디렉토리 초기화
-const dataDir = path.join(__dirname, 'data');
-if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir);
-}
-const dataFilePath = path.join(dataDir, 'users.json');
-if (!fs.existsSync(dataFilePath)) {
-    fs.writeFileSync(dataFilePath, JSON.stringify([]));
-}
+// 미들웨어
+const sessionMiddleware = require('./middlewares/sessionMiddleware');
+const corsMiddleware = require('./middlewares/corsMiddleware');
+//const cryptoMiddleware = require('./middlewares/cryptoMiddleware');
+const loggerMiddleware = require('./middlewares/loggerMiddleware');
+const jsonInit = require('./middlewares/jsonInit');
 
 const app = express();
 const PORT = 3000;
-// data 폴더에 JSON 파일 저장
-const upload = multer({ dest: 'data/' });
 
-app.use(express.json()); // JSON 요청 파싱
+// 1. JSON 및 폴더 초기화
+jsonInit();
+
+// 2. 글로벌 미들웨어
 app.use(bodyParser.json());
-app.use(cors()); // cors 설정
+app.use(corsMiddleware);
+app.use(loggerMiddleware);
 
+// 세션이 필요 없는 라우트(예: 정적 파일 서빙)에서는 비효율적, 세션이 필요한 라우트에서만 적용
+app.use('/api/auths', sessionMiddleware);
+// 암호화/복호화 기능이 필요한 라우트에서만 적용
+// app.use('api/auths', cryptoMiddleware);
+
+// 3. 라우터 설정
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/auths', authRoutes);
 
-// 프론트엔드 파일 가져오기
+// 4. 정적 파일 서빙
 const frontendPath = path.join(__dirname, '../2-jack-lee-community-fe/public');
-app.use(express.static(frontendPath)); // 클라이언트에 정적 파일 제공(서빙)
+app.use(express.static(frontendPath));
 
-// 정적 파일 서빙 경로 설정
 app.use(
     '/profile-images',
     express.static(path.join(__dirname, 'data/profile-images')),
@@ -45,6 +49,10 @@ app.use(
 );
 
 // HTML 파일 처리(3000번 포트)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'html/login.html'));
+});
+
 // 회원가입
 app.get('/users/register', (req, res) => {
     res.sendFile(path.join(frontendPath, 'html/signup.html'));

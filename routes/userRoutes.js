@@ -30,9 +30,6 @@ router.patch('/update-password/:id', userController.changePassword);
 // 회원탈퇴
 router.delete('/:id', userController.deleteUser);
 
-// 로그인
-// router.post('/login', userController.login);
-
 // 프로필 이미지 업로드
 router.post(
     '/:user_id/profile-image',
