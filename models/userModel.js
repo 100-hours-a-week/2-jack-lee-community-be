@@ -137,6 +137,9 @@ const userModel = {
         const index = users.findIndex((user) => user.id === id);
 
         if (index !== -1) {
+            // 비밀번호 해싱
+            newPassword = hashPassword(newPassword);
+
             users[index].password = newPassword; // 비밀번호 업데이트
             await writeUserFile(users);
             return true; // 성공적으로 변경

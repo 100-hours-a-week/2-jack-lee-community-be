@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 const { profileImageUpload } = require('../utils/fileUpload');
+const isLoggedIn = require('../middlewares/isLoggedIn');
 
 // 이메일 중복 체크
 router.get('/check-email', userController.checkEmailDuplicate);

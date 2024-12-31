@@ -26,7 +26,7 @@ app.use(corsMiddleware);
 app.use(loggerMiddleware);
 
 // 세션이 필요 없는 라우트(예: 정적 파일 서빙)에서는 비효율적, 세션이 필요한 라우트에서만 적용
-app.use('/api/auths', sessionMiddleware);
+app.use(sessionMiddleware);
 // 암호화/복호화 기능이 필요한 라우트에서만 적용
 // app.use('api/auths', cryptoMiddleware);
 
@@ -37,7 +37,9 @@ app.use('/api/auths', authRoutes);
 
 // 4. 정적 파일 서빙
 const frontendPath = path.join(__dirname, '../2-jack-lee-community-fe/public');
+const globalPath = path.join(__dirname, '../2-jack-lee-community-fe');
 app.use(express.static(frontendPath));
+app.use(express.static(globalPath));
 
 app.use(
     '/profile-images',

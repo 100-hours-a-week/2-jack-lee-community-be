@@ -8,18 +8,7 @@ const getPostList = (req, res) => {
     // 이미 모델에서 예외처리를 해서 또 할 필요 없음
     const posts = postModel.getAllPosts();
 
-    // 목록에 필요한 필드만 반환
-    const postList = posts.map((post) => ({
-        post_id: post.post_id,
-        post_title: post.post_title,
-        author: post.author, // author는 object 타입
-        created_at: post.created_at,
-        likes: post.likes,
-        comments: post.comments,
-        views: post.views,
-    }));
-
-    res.status(200).json({ status: 200, data: postList });
+    res.status(200).json({ status: 200, data: posts });
 };
 
 const getPostDetail = (req, res) => {
@@ -33,6 +22,7 @@ const getPostDetail = (req, res) => {
     // 질문: res.status(200).json({ status: 200, data: post }); 를 쓰는 게 맞을까 status 속성을 따로 두는게 맞을까?
     res.json({ status: 200, data: post });
 };
+
 // 새로운 게시글 저장
 const savePost = async (req, res) => {
     const { post_title, post_content } = req.body;
@@ -43,9 +33,8 @@ const savePost = async (req, res) => {
         });
     }
 
-    const userId = req.cookies.userId; // 쿠키에서 userId 추출
+    const userId = req.session.user.userId;
     const userData = await userModel.getUserById(userId);
-    console.log('userData: ', userData);
     const userNickname = userData.nickname;
     const userProfileImage = userData.profile_image;
 
@@ -61,6 +50,7 @@ const savePost = async (req, res) => {
         },
         created_at: formatDateTime(),
         likes: 0,
+        likes_list: [],
         comments: 0,
         views: 0,
     };
@@ -104,19 +94,34 @@ const deletePost = (req, res) => {
 };
 
 // 댓글 수 증가
-const addComment = (req, res) => {
+const addComment = async (req, res) => {
     const { post_id } = req.params;
-    const { comment_content, comment_author } = req.body;
+    const { comment_content } = req.body;
+
+    if (!req.session.user) {
+        return res.status(401).json({ message: '로그인이 필요합니다.' });
+    }
 
     if (!comment_content) {
+        return res.status(400).json({ message: '댓글 내용을 적어주세요' });
+    }
+
+    // 세션에 저장된 userId를 통해 현재 로그인한 유저의 상태값을 불러오기기
+    const users = await userModel.getAllUsers();
+    const user = users.find((u) => u.id === req.session.user.userId);
+    if (!user) {
         return res
-            .status(400)
-            .json({ message: 'comment content cannot be empty' });
+            .status(404)
+            .json({ message: '사용자 정보를 찾을 수 없습니다.' });
     }
 
     const newComment = {
         comment_content,
-        comment_author: comment_author || {},
+        comment_author: {
+            user_id: user.id,
+            nickname: user.nickname,
+            profile_image: user.profile_image,
+        },
     };
 
     const comment = postModel.addComment(post_id, newComment);
@@ -212,15 +217,13 @@ const uploadPostImage = (req, res) => {
     });
 };
 
-// 좋아요 수 증가
-const addLikesCount = (req, res) => {
+// 좋아요 수 증가, 감소
+const setLikesCount = (req, res) => {
     const { post_id } = req.params;
 
-    const updatedElement = postModel.addLikes(post_id);
+    const userId = req.session.user.userId;
 
-    if (!updatedElement) {
-        return res.status(404).json({ message: 'posts_not_found' });
-    }
+    const updatedElement = postModel.setLikes(post_id, userId);
 
     res.status(200).json({
         message: 'likes_updated_successfully',
@@ -239,6 +242,17 @@ const getLikesCount = (req, res) => {
         data: likes,
     });
 };
+
+const getLikeStatus = (req, res) => {
+    const { postId } = req.params;
+
+    const userId = req.session.user.userId;
+
+    const liked = postModel.likesStatus(postId, userId);
+
+    res.json({ success: true, liked });
+};
+
 // 조회수 증가
 const addViewsCount = (req, res) => {
     const { post_id } = req.params;
@@ -318,8 +332,9 @@ module.exports = {
     updateComment,
     deleteComment,
     uploadPostImage,
-    addLikesCount,
+    setLikesCount,
     getLikesCount,
+    getLikeStatus,
     addViewsCount,
     getViewsCount,
     addCommentsCount,

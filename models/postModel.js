@@ -5,6 +5,8 @@ const formatDateTime = require('../utils/utils');
 
 // JSON 파일 경로 설정 - 게시글 관련 json 파일은 data/posts.json에 저장
 const postsFilePath = path.join(__dirname, '../data/posts.json');
+// 좋아요 누른 user 저장 Set
+const likesSet = new Set();
 
 const postModel = {
     // 파일에서 데이터 읽기
@@ -107,8 +109,8 @@ const postModel = {
             comment_content: newComment.comment_content,
             comment_created_at: formatDateTime(),
             comment_author: {
-                id: newComment.comment_author?.id || null,
-                name: newComment.comment_author?.name || null,
+                user_id: newComment.comment_author?.user_id || null,
+                nickname: newComment.comment_author?.nickname || null,
                 profile_image: newComment.comment_author?.profile_image || null,
             },
         };
@@ -187,20 +189,31 @@ const postModel = {
         return post;
     },
 
-    // 좋아요 수 증가
-    addLikes(postId) {
+    // 좋아요 수 증가, 감소
+    setLikes(postId, userId) {
         const posts = this.getAllPosts();
         const post = posts.find((p) => p.post_id === postId);
 
         if (!post) return null;
 
-        if (typeof post.likes !== 'number') {
-            post.likes = 0;
+        if (likesSet.has(userId)) {
+            console.log('delete');
+            likesSet.delete(userId); // 좋아요 취소
+        } else {
+            console.log('add');
+            likesSet.add(userId); // 좋아요 추가
         }
+        console.log(likesSet);
 
-        post.likes += 1;
+        const likeCount = likesSet.size; // 현재 좋아요 수
+
+        // posts.json의 likes 업데이트, likesList에 좋아요 누른 사용자의 id 저장
+        post.likes = likeCount;
+        post.likesList = [...likesSet];
+
         this.saveAllPosts(posts);
-        return post;
+
+        return likeCount;
     },
     // 좋아요 수 조회
     getLikes(postId) {
@@ -209,12 +222,16 @@ const postModel = {
 
         if (!post) return null;
 
-        if (typeof post.likes !== 'number') {
-            console.error('좋아요 수가 숫자형이 아님');
-        }
-
         return post.likes;
     },
+    likesStatus(postId, userId) {
+        if (likesSet.has(userId)) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+
     // 조회 수 증가
     addViews(postId) {
         const posts = this.getAllPosts();
@@ -280,7 +297,11 @@ const postModel = {
 
         if (!post) return null;
 
-        return post.comments_info.length;
+        if (post.comments_info) {
+            return post.comments_info.length;
+        } else {
+            return 0;
+        }
     },
 };
 
