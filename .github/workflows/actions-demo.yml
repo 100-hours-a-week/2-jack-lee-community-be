@@ -1,0 +1,20 @@
+name: GitHub Actions 데모
+
+on: [push]
+
+jobs:
+    hello-github-actions:
+        runs-on: ubuntu-latest
+
+        steps:
+            - run: echo "🎉 이 작업은 ${{ github.event_name }} 이벤트로 자동 실행되었습니다."
+            - run: echo "🐧 현재 이 작업은 GitHub에서 제공하는 ${{ runner.os }} 서버에서 실행 중입니다."
+            - run: echo "🔎 현재 브랜치 이름은 ${{ github.ref }}이고, 이 저장소는 ${{ github.repository }}입니다."
+            - name: 코드 저장소 체크아웃
+              uses: actions/checkout@v2
+            - run: echo "💡 ${{ github.repository }} 저장소가 실행 환경에 복사되었습니다."
+            - run: echo "🖥️ 이제 실행 환경에서 코드를 테스트할 준비가 되었습니다."
+            - name: 저장소 파일 목록 확인
+              run: |
+                  ls ${{ github.workspace }}
+            - run: echo "🍏 현재 작업의 상태는 ${{ job.status }}입니다."
