@@ -1,7 +1,12 @@
-const fs = require('fs');
-const path = require('path');
-const { v4: uuidv4 } = require('uuid');
-const formatDateTime = require('../utils/utils');
+import fs from 'fs';
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
+import formatDateTime from '../utils/utils.js';
+import { fileURLToPath } from 'url';
+
+// ES 모듈에서 __dirname과 __filename 설정
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // JSON 파일 경로 설정 - 게시글 관련 json 파일은 data/posts.json에 저장
 const postsFilePath = path.join(__dirname, '../data/posts.json');
@@ -297,6 +302,11 @@ const postModel = {
 
         if (!post) return null;
 
+        console.log(post.comments);
+
+        post.comments = post.comments_info.length;
+        this.saveAllPosts(posts);
+
         if (post.comments_info) {
             return post.comments_info.length;
         } else {
@@ -305,4 +315,4 @@ const postModel = {
     },
 };
 
-module.exports = postModel;
+export default postModel;

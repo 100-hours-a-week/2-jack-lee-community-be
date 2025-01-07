@@ -1,8 +1,9 @@
-const express = require('express');
+import express from 'express';
+import postController from '../controllers/postController.js';
+import { postImageUpload } from '../utils/fileUpload.js';
+import isLoggedIn from '../middlewares/isLoggedIn.js';
+
 const router = express.Router();
-const postController = require('../controllers/postController');
-const { postImageUpload } = require('../utils/fileUpload');
-const isLoggedIn = require('../middlewares/isLoggedIn');
 
 // 게시글 목록 정보 조회
 router.get('', postController.getPostList);
@@ -78,4 +79,4 @@ router.post(
 // 댓글 수 조회
 router.get('/:post_id/comments_count', postController.getCommentsCount);
 
-module.exports = router;
+export default router;

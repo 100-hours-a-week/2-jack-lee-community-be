@@ -1,18 +1,23 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
+import express from 'express';
+import bodyParser from 'body-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 // 라우터
-const userRoutes = require('./routes/userRoutes');
-const postRoutes = require('./routes/postRoute');
-const authRoutes = require('./routes/authRoute');
+import userRoutes from './routes/userRoutes.js';
+import postRoutes from './routes/postRoute.js';
+import authRoutes from './routes/authRoute.js';
 
 // 미들웨어
-const sessionMiddleware = require('./middlewares/sessionMiddleware');
-const corsMiddleware = require('./middlewares/corsMiddleware');
-//const cryptoMiddleware = require('./middlewares/cryptoMiddleware');
-const loggerMiddleware = require('./middlewares/loggerMiddleware');
-const jsonInit = require('./middlewares/jsonInit');
+import sessionMiddleware from './middlewares/sessionMiddleware.js';
+import corsMiddleware from './middlewares/corsMiddleware.js';
+// import cryptoMiddleware from './middlewares/cryptoMiddleware.js';
+import loggerMiddleware from './middlewares/loggerMiddleware.js';
+import jsonInit from './middlewares/jsonInit.js';
+
+// ES 모듈에서 __dirname과 __filename 설정
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = 3000;
@@ -25,10 +30,8 @@ app.use(bodyParser.json());
 app.use(corsMiddleware);
 app.use(loggerMiddleware);
 
-// 세션이 필요 없는 라우트(예: 정적 파일 서빙)에서는 비효율적, 세션이 필요한 라우트에서만 적용
+// 세션이 필요한 라우트에만 적용
 app.use(sessionMiddleware);
-// 암호화/복호화 기능이 필요한 라우트에서만 적용
-// app.use('api/auths', cryptoMiddleware);
 
 // 3. 라우터 설정
 app.use('/api/users', userRoutes);

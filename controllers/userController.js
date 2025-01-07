@@ -1,5 +1,5 @@
-const fs = require('fs');
-const userModel = require('../models/userModel');
+import fs from 'fs';
+import userModel from '../models/userModel.js';
 
 // 모든 사용자 가져오기
 const getAllUsers = async (req, res) => {
@@ -17,7 +17,7 @@ const getAllUsers = async (req, res) => {
 // ID로 사용자 가져오기
 const getUserById = async (req, res) => {
     try {
-        const id = req.params.id; // 요청의 ID 파라미터
+        const { id } = req.params; // 요청의 ID 파라미터
 
         if (!id) {
             return res.status(400).json({ message: 'Invalid user ID' }); // 잘못된 요청
@@ -42,9 +42,7 @@ const getUserByEmail = async (req, res) => {
     try {
         const { email } = req.params;
         if (!email) {
-            return res
-                .status(400)
-                .json({ message: 'Email query parameter is required' });
+            return res.status(400).json({ message: 'Email is required' });
         }
 
         const user = await userModel.getUserByEmail(email);
@@ -53,7 +51,7 @@ const getUserByEmail = async (req, res) => {
         } else {
             res.status(404).json({
                 message: `User with email ${email} not found`,
-            }); // 사용자 없음
+            });
         }
     } catch (error) {
         res.status(500).json({
@@ -68,12 +66,11 @@ const addUser = async (req, res) => {
     try {
         const { email, password, re_password, nickname, profile_image } =
             req.body;
-        // 입력 데이터 검증
+
         if (!email || !password || !nickname || password !== re_password) {
-            return res.status(400).json({ message: 'invaild_input' });
+            return res.status(400).json({ message: 'invalid_input' });
         }
 
-        // 유저 생성
         const newUser = await userModel.addUser({
             email,
             password,
@@ -96,7 +93,8 @@ const addUser = async (req, res) => {
 // 사용자 업데이트
 const updateUser = async (req, res) => {
     try {
-        const id = req.params.id;
+        const { id } = req.params;
+
         if (!id) {
             return res.status(400).json({ message: 'Invalid user ID' });
         }
@@ -124,12 +122,14 @@ const updateUser = async (req, res) => {
 // 사용자 삭제
 const deleteUser = async (req, res) => {
     try {
-        const id = req.params.id;
+        const { id } = req.params;
+
         if (!id) {
             return res.status(400).json({ message: 'Invalid user ID' });
         }
 
         const isDeleted = await userModel.deleteUser(id);
+
         if (isDeleted) {
             res.status(200).json({
                 message: `User with ID ${id} deleted successfully`,
@@ -148,26 +148,19 @@ const deleteUser = async (req, res) => {
 // 비밀번호 변경
 const changePassword = async (req, res) => {
     try {
-        const id = req.params.id;
+        const { id } = req.params;
         const { password, re_password } = req.body;
 
-        // 요청 데이터 검증
         if (!id) {
             return res.status(400).json({ message: 'Invalid user ID' });
         }
 
-        if (!password || !re_password) {
-            return res
-                .status(400)
-                .json({ message: 'Password and re_password are required' });
-        }
-
-        if (password !== re_password) {
+        if (!password || !re_password || password !== re_password) {
             return res.status(400).json({ message: 'Passwords do not match' });
         }
 
-        // 비밀번호 변경
         const isPasswordChanged = await userModel.changePassword(id, password);
+
         if (isPasswordChanged) {
             res.status(200).json({ message: 'Password changed successfully' });
         } else {
@@ -184,7 +177,7 @@ const changePassword = async (req, res) => {
 // 이메일 중복 체크
 const checkEmailDuplicate = async (req, res) => {
     try {
-        const email = req.query.email;
+        const { email } = req.query;
 
         if (!email) {
             return res
@@ -194,17 +187,12 @@ const checkEmailDuplicate = async (req, res) => {
 
         const isDuplicate = await userModel.isEmailDuplicate(email);
 
-        if (isDuplicate) {
-            res.status(200).json({
-                available: false,
-                message: 'Email already exists',
-            });
-        } else {
-            res.status(200).json({
-                available: true,
-                message: 'Email is available',
-            });
-        }
+        res.status(200).json({
+            available: !isDuplicate,
+            message: isDuplicate
+                ? 'Email already exists'
+                : 'Email is available',
+        });
     } catch (error) {
         res.status(500).json({
             message: 'Error checking email',
@@ -213,10 +201,10 @@ const checkEmailDuplicate = async (req, res) => {
     }
 };
 
-//닉네임 중복 체크
+// 닉네임 중복 체크
 const checkNicknameDuplicate = async (req, res) => {
     try {
-        const nickname = req.query.nickname;
+        const { nickname } = req.query;
 
         if (!nickname) {
             return res
@@ -226,53 +214,59 @@ const checkNicknameDuplicate = async (req, res) => {
 
         const isDuplicate = await userModel.isNicknameDuplicate(nickname);
 
-        if (isDuplicate) {
-            res.status(200).json({
-                available: false,
-                message: 'Nickname already exists',
-            });
-        } else {
-            res.status(200).json({
-                available: true,
-                message: 'Nickname is available',
-            });
-        }
+        res.status(200).json({
+            available: !isDuplicate,
+            message: isDuplicate
+                ? 'Nickname already exists'
+                : 'Nickname is available',
+        });
     } catch (error) {
         res.status(500).json({
-            message: 'Error checking Nickname',
+            message: 'Error checking nickname',
             error: error.message,
         });
     }
 };
 
-// 이미지 업로드 및 경로 업데이트
+// 프로필 이미지 업로드
 const uploadProfileImage = async (req, res) => {
-    const { user_id } = req.params;
+    try {
+        const { user_id } = req.params;
 
-    if (!req.file) {
-        return res.status(400).json({ message: 'invalid_image_file_request' });
+        if (!req.file) {
+            return res
+                .status(400)
+                .json({ message: 'invalid_image_file_request' });
+        }
+
+        const imagePath = `http://localhost:3000/profile-images/${req.file.filename}`;
+
+        const updatedProfile = await userModel.updateProfileImage(
+            user_id,
+            imagePath,
+        );
+
+        if (!updatedProfile) {
+            fs.unlinkSync(req.file.path); // 업로드된 이미지 삭제
+            return res
+                .status(404)
+                .json({ message: 'image_file_upload_failed' });
+        }
+
+        res.status(200).json({
+            message: 'profile_image_uploaded_successfully',
+            data: updatedProfile,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error uploading profile image',
+            error: error.message,
+        });
     }
-
-    const imagePath = `http://localhost:3000/profile-images/${req.file.filename}`;
-
-    const updatedProfile = await userModel.updateProfileImage(
-        user_id,
-        imagePath,
-    );
-
-    if (!updatedProfile) {
-        // 이미지 파일 삭제
-        fs.unlinkSync(req.file.path);
-        return res.status(404).json({ message: 'image_file_upload_failed' });
-    }
-
-    res.status(200).json({
-        message: 'profile_image_uploaded_successfully',
-        data: updatedProfile,
-    });
 };
 
-module.exports = {
+// 모든 메서드 객체로 export
+const userController = {
     getAllUsers,
     getUserById,
     getUserByEmail,
@@ -284,3 +278,5 @@ module.exports = {
     checkNicknameDuplicate,
     uploadProfileImage,
 };
+
+export default userController;

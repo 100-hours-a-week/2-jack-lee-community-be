@@ -1,109 +1,92 @@
-const userModel = require('../models/userModel');
+import userModel from '../models/userModel.js';
 
-// 회원가입은 userController에 있음, 리팩토링 때 변경 예정
-// controllers/
-// ├── authController.js   // 로그인, 로그아웃, 회원가입
-// ├── userController.js   // 사용자 프로필 조회, 수정 등
 const authController = {
-    // async register(req, res) {
-    //     try {
-    //         const { email, password, nickname, profile_image } = req.body;
-    //         const newUser = await userModel.createUser(
-    //             email,
-    //             password,
-    //             nickname,
-    //             profile_image,
-    //         );
-
-    //         res.status(201).json({
-    //             message: '사용자 등록 성공',
-    //             user: {
-    //                 id: newUser.id,
-    //                 email: newUser.email,
-    //                 nickname: newUser.nickname,
-    //                 profile_image: newUser.profile_image,
-    //             },
-    //         });
-    //     } catch (error) {
-    //         res.status(400).json({ message: error.message });
-    //     }
-    // },
-
-    async login(req, res) {
+    // 로그인 처리
+    login: async (req, res) => {
         try {
             const { email, password } = req.body;
             const user = await userModel.validateUser(email, password);
 
             if (user) {
+                // 세션에 사용자 정보 저장
                 req.session.user = {
                     userId: user.id,
                     email: user.email,
                     nickname: user.nickname,
                 };
 
+                // 쿠키 설정 (1시간 유효)
                 res.cookie('session_id', req.sessionID, {
                     httpOnly: true,
                     maxAge: 1000 * 60 * 60,
-                }); // 1시간 쿠키
+                });
 
+                // 로그인 성공 응답
                 res.json({
                     message: '로그인 성공(세션 저장)',
                     user,
                 });
             } else {
+                // 인증 실패 응답
                 res.status(401).json({ message: '인증 실패' });
             }
         } catch (error) {
+            // 서버 오류 처리
             res.status(500).json({ message: error.message });
         }
     },
 
-    logout(req, res) {
+    // 로그아웃 처리
+    logout: (req, res) => {
         req.session.destroy((err) => {
             if (err) {
+                // 세션 삭제 실패 처리
                 return res.status(500).json({ message: '로그아웃 실패' });
             }
+            // 쿠키 삭제 후 로그아웃 성공 응답
             res.clearCookie('session_id');
-
             res.json({ message: '로그아웃 성공' });
         });
     },
 
-    // 인증 미들웨어
-    isAuthenticated(req, res, next) {
+    // 인증 여부 확인 미들웨어
+    isAuthenticated: (req, res, next) => {
         const sessionID = req.sessionID;
 
-        if (sessionID === undefined) {
+        if (!sessionID) {
+            // 인증되지 않은 경우
             return res.status(401).json({ message: '인증되지 않았습니다.' });
         }
 
+        // 인증된 경우 다음 미들웨어로 이동
         next();
     },
 
-    // 프로필 조회
-    async getProfile(req, res) {
+    // 사용자 프로필 조회
+    getProfile: async (req, res) => {
         try {
             // 세션에 사용자 정보가 있는지 확인
-            if (!req.session || !req.session.user || !req.session.user.userId) {
+            if (!req.session?.user?.userId) {
                 return res
                     .status(401)
                     .json({ message: '로그인이 필요합니다.' });
             }
 
             const userId = req.session.user.userId;
-
             const user = await userModel.getUserById(userId);
 
             if (!user) {
+                // 사용자를 찾을 수 없는 경우
                 return res
                     .status(404)
                     .json({ message: '사용자를 찾을 수 없습니다.' });
             }
 
-            // 비밀번호 제거 후 사용자 정보 반환
+            // 비밀번호 제외한 사용자 정보 반환
             const { password, ...userProfile } = user;
             res.status(200).json(userProfile);
         } catch (error) {
+            // 서버 오류 처리
             console.error('사용자 정보 조회 오류:', error);
             res.status(500).json({
                 message: '서버 오류가 발생했습니다.',
@@ -113,4 +96,4 @@ const authController = {
     },
 };
 
-module.exports = authController;
+export default authController;

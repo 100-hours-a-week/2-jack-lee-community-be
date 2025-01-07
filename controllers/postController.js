@@ -1,16 +1,15 @@
-const fs = require('fs');
-const postModel = require('../models/postModel');
-const userModel = require('../models/userModel');
-const formatDateTime = require('../utils/utils');
+import fs from 'fs';
+import postModel from '../models/postModel.js';
+import userModel from '../models/userModel.js';
+import formatDateTime from '../utils/utils.js';
 
 // 게시글 목록 가져오기
 const getPostList = (req, res) => {
-    // 이미 모델에서 예외처리를 해서 또 할 필요 없음
     const posts = postModel.getAllPosts();
-
     res.status(200).json({ status: 200, data: posts });
 };
 
+// 게시글 상세 정보 조회
 const getPostDetail = (req, res) => {
     const { post_id } = req.params;
     const post = postModel.getPostById(post_id);
@@ -19,7 +18,6 @@ const getPostDetail = (req, res) => {
         return res.status(404).json({ status: 404, message: 'Post not found' });
     }
 
-    // 질문: res.status(200).json({ status: 200, data: post }); 를 쓰는 게 맞을까 status 속성을 따로 두는게 맞을까?
     res.json({ status: 200, data: post });
 };
 
@@ -28,15 +26,12 @@ const savePost = async (req, res) => {
     const { post_title, post_content } = req.body;
 
     if (!post_title || !post_content) {
-        return res.status(400).json({
-            message: 'invaild_input',
-        });
+        return res.status(400).json({ message: 'invalid_input' });
     }
 
     const userId = req.session.user.userId;
     const userData = await userModel.getUserById(userId);
-    const userNickname = userData.nickname;
-    const userProfileImage = userData.profile_image;
+    const { nickname, profile_image } = userData;
 
     const newPost = {
         post_title,
@@ -45,8 +40,8 @@ const savePost = async (req, res) => {
         post_image_name: null,
         author: {
             id: userId,
-            name: userNickname,
-            profile_image: userProfileImage,
+            name: nickname,
+            profile_image,
         },
         created_at: formatDateTime(),
         likes: 0,
@@ -93,7 +88,7 @@ const deletePost = (req, res) => {
     res.status(200).json({ message: 'Post deleted successfully' });
 };
 
-// 댓글 수 증가
+// 댓글 추가
 const addComment = async (req, res) => {
     const { post_id } = req.params;
     const { comment_content } = req.body;
@@ -106,9 +101,8 @@ const addComment = async (req, res) => {
         return res.status(400).json({ message: '댓글 내용을 적어주세요' });
     }
 
-    // 세션에 저장된 userId를 통해 현재 로그인한 유저의 상태값을 불러오기기
-    const users = await userModel.getAllUsers();
-    const user = users.find((u) => u.id === req.session.user.userId);
+    const user = await userModel.getUserById(req.session.user.userId);
+
     if (!user) {
         return res
             .status(404)
@@ -139,9 +133,7 @@ const addComment = async (req, res) => {
 // 특정 게시글의 댓글 조회
 const getComments = (req, res) => {
     const { post_id } = req.params;
-
     const comments = postModel.getCommentsByPostId(post_id);
-
     res.status(200).json({
         message: 'comments_retrieved_successfully',
         data: comments,
@@ -186,7 +178,7 @@ const deleteComment = (req, res) => {
     res.status(200).json({ message: 'comment_deleted_successfully' });
 };
 
-// 이미지 업로드 및 경로 업데이트
+// 게시글 이미지 업로드
 const uploadPostImage = (req, res) => {
     const { post_id } = req.params;
 
@@ -194,9 +186,7 @@ const uploadPostImage = (req, res) => {
         return res.status(400).json({ message: 'invalid_image_file_request' });
     }
 
-    // 게시글 이미지 저장 경로
     const imagePath = `http://localhost:3000/post-images/${req.file.filename}`;
-    // 게시글 이미지 파일 이름
     const imageFileName = req.body.post_image_name;
 
     const updatedPost = postModel.updatePostImage(
@@ -206,7 +196,6 @@ const uploadPostImage = (req, res) => {
     );
 
     if (!updatedPost) {
-        // 이미지 파일 삭제
         fs.unlinkSync(req.file.path);
         return res.status(404).json({ message: 'image_file_upload_failed' });
     }
@@ -243,6 +232,7 @@ const getLikesCount = (req, res) => {
     });
 };
 
+// 좋아요 상태 조회
 const getLikeStatus = (req, res) => {
     const { postId } = req.params;
 
@@ -268,6 +258,7 @@ const addViewsCount = (req, res) => {
         data: views,
     });
 };
+
 // 조회수 조회
 const getViewsCount = (req, res) => {
     const { post_id } = req.params;
@@ -279,6 +270,7 @@ const getViewsCount = (req, res) => {
         data: views,
     });
 };
+
 // 댓글 수 증가
 const addCommentsCount = (req, res) => {
     const { post_id } = req.params;
@@ -294,6 +286,7 @@ const addCommentsCount = (req, res) => {
         data: comments,
     });
 };
+
 // 댓글 수 감소
 const decreaseCommentsCount = (req, res) => {
     const { post_id } = req.params;
@@ -309,7 +302,8 @@ const decreaseCommentsCount = (req, res) => {
         data: comments,
     });
 };
-// 댓글수 조회
+
+// 댓글 수 조회
 const getCommentsCount = (req, res) => {
     const { post_id } = req.params;
 
@@ -321,7 +315,7 @@ const getCommentsCount = (req, res) => {
     });
 };
 
-module.exports = {
+const postController = {
     savePost,
     getPostList,
     getPostDetail,
@@ -341,3 +335,5 @@ module.exports = {
     decreaseCommentsCount,
     getCommentsCount,
 };
+
+export default postController;

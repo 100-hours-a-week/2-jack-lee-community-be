@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
+import userController from '../controllers/userController.js';
+import { profileImageUpload } from '../utils/fileUpload.js';
+
 const router = express.Router();
-const userController = require('../controllers/userController');
-const { profileImageUpload } = require('../utils/fileUpload');
-const isLoggedIn = require('../middlewares/isLoggedIn');
 
 // 이메일 중복 체크
 router.get('/check-email', userController.checkEmailDuplicate);
@@ -13,10 +13,10 @@ router.get('/check-nickname', userController.checkNicknameDuplicate);
 // 모든 사용자 정보 조회
 router.get('', userController.getAllUsers);
 
-// id로 특정 사용자 정보 조회
+// ID로 특정 사용자 정보 조회
 router.get('/:id', userController.getUserById);
 
-// email로 특정 사용자 정보 조회
+// Email로 특정 사용자 정보 조회
 router.get('/e/:email', userController.getUserByEmail);
 
 // 회원가입
@@ -38,4 +38,4 @@ router.post(
     userController.uploadProfileImage,
 );
 
-module.exports = router;
+export default router;
