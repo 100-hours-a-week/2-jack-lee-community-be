@@ -1,49 +1,8 @@
-import fs from 'fs';
-import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import crypto from 'crypto';
-import { fileURLToPath } from 'url';
+import db from '../config/dbConfig.js';
 
-// 현재 파일 경로와 디렉토리 경로 초기화 (ES 모듈 호환)
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// JSON 파일 경로 설정 - 사용자 관련 json 파일은 data/users.json에 저장
-const userFilePath = path.join(__dirname, '../data/users.json');
-
-// JSON 파일 읽기
-const readUserFile = async () => {
-    try {
-        const userData = fs.readFileSync(userFilePath, 'utf-8');
-        if (!userData.trim()) {
-            return [];
-        }
-        const parsedData = JSON.parse(userData);
-        if (!Array.isArray(parsedData)) {
-            throw new Error('Data is not in expected array format');
-        }
-        return parsedData;
-    } catch (error) {
-        console.error('Error reading user file:', error);
-        return [];
-    }
-};
-
-// JSON 파일 쓰기
-const writeUserFile = async (userData) => {
-    try {
-        fs.writeFileSync(
-            userFilePath,
-            JSON.stringify(userData, null, 2),
-            'utf-8',
-        );
-    } catch (error) {
-        console.error('Error writing to user file:', error);
-        throw new Error('Failed to write user data to file');
-    }
-};
-
-// 비밀번호 해싱
+// 비밀번호 해싱 함수
 const hashPassword = (password) => {
     return crypto.createHash('sha256').update(password).digest('hex');
 };
@@ -61,95 +20,120 @@ const userModel = {
     },
 
     // 모든 사용자 조회
-    getAllUsers: async () => await readUserFile(),
+    getAllUsers: async () => {
+        const [rows] = await db.execute(
+            'SELECT user_id, username, email, profile_image_url FROM users',
+        );
+        return rows;
+    },
 
     // ID로 사용자 조회
     getUserById: async (id) => {
-        const users = await readUserFile();
-        return users.find((user) => user.id === id) || null;
+        const [rows] = await db.execute(
+            'SELECT user_id, username, email, profile_image_url FROM users WHERE user_id = ?',
+            [id],
+        );
+        return rows[0] || null;
     },
 
     // 이메일로 사용자 조회
     getUserByEmail: async (email) => {
-        const users = await readUserFile();
-        return users.find((user) => user.email === email) || null;
+        const [rows] = await db.execute(
+            'SELECT user_id, username, email, profile_image_url FROM users WHERE email = ?',
+            [email],
+        );
+        return rows[0] || null;
     },
 
     // 새 사용자 추가
     addUser: async (newUser) => {
-        const users = await readUserFile();
-        newUser.id = uuidv4();
+        newUser.user_id = uuidv4();
         newUser.password = hashPassword(newUser.password);
-        delete newUser.re_password;
-        users.push(newUser);
-        await writeUserFile(users);
+        delete newUser.re_password; // 비밀번호 확인 필드 제거
+
+        await db.execute(
+            'INSERT INTO users (user_id, username, email, password, profile_image_url) VALUES (?, ?, ?, ?, ?)',
+            [
+                newUser.user_id,
+                newUser.username,
+                newUser.email,
+                newUser.password,
+                newUser.profile_image_url || null,
+            ],
+        );
         return newUser;
     },
 
     // 사용자 업데이트
     updateUser: async (id, updatedUser) => {
-        const users = await readUserFile();
-        const index = users.findIndex((user) => user.id === id);
-        if (index === -1) return null;
+        const { username, profile_image_url } = updatedUser;
 
-        const { nickname, profile_image } = updatedUser;
-        if (nickname) users[index].nickname = nickname;
-        if (profile_image) users[index].profile_image = profile_image;
+        await db.execute(
+            'UPDATE users SET username = ?, profile_image_url = ? WHERE user_id = ?',
+            [username || null, profile_image_url || null, id],
+        );
 
-        await writeUserFile(users);
-        return users[index];
+        const [rows] = await db.execute(
+            'SELECT user_id, username, email, profile_image_url FROM users WHERE user_id = ?',
+            [id],
+        );
+        return rows[0] || null;
     },
 
     // 사용자 삭제
     deleteUser: async (id) => {
-        const users = await readUserFile();
-        const filteredUsers = users.filter((user) => user.id !== id);
-        if (users.length === filteredUsers.length) return false;
-
-        await writeUserFile(filteredUsers);
-        return true;
+        const [result] = await db.execute(
+            'DELETE FROM users WHERE user_id = ?',
+            [id],
+        );
+        return result.affectedRows > 0;
     },
 
     // 비밀번호 변경
     changePassword: async (id, newPassword) => {
-        const users = await readUserFile();
-        const index = users.findIndex((user) => user.id === id);
-        if (index === -1) return false;
+        const hashedPassword = hashPassword(newPassword);
 
-        users[index].password = hashPassword(newPassword);
-        await writeUserFile(users);
-        return true;
+        const [result] = await db.execute(
+            'UPDATE users SET password = ? WHERE user_id = ?',
+            [hashedPassword, id],
+        );
+        return result.affectedRows > 0;
     },
 
     // 이메일 중복 체크
     isEmailDuplicate: async (email) => {
-        const users = await readUserFile();
-        return users.some(
-            (user) =>
-                user.email ===
-                email.trim().replace(/\s+/g, '').replace(/['"]+/g, ''),
+        const sanitizedEmail = email.trim().replace(/['"]+/g, ''); // 공백 및 따옴표 제거
+
+        const [rows] = await db.execute(
+            'SELECT COUNT(*) as count FROM users WHERE email = ?',
+            [sanitizedEmail],
         );
+        return rows[0].count > 0;
     },
 
     // 닉네임 중복 체크
-    isNicknameDuplicate: async (nickname) => {
-        const users = await readUserFile();
-        return users.some(
-            (user) =>
-                user.nickname ===
-                nickname.trim().replace(/\s+/g, '').replace(/['"]+/g, ''),
+    isUsernameDuplicate: async (username) => {
+        const sanitizedUsername = username.trim().replace(/['"]+/g, ''); // 공백 및 따옴표 제거
+
+        const [rows] = await db.execute(
+            'SELECT COUNT(*) as count FROM users WHERE username = ?',
+            [sanitizedUsername],
         );
+        return rows[0].count > 0;
     },
 
     // 프로필 이미지 업데이트
-    updateProfileImage: async (userId, profileImage) => {
-        const users = await readUserFile();
-        const user = users.find((user) => user.id === userId);
-        if (!user) return null;
+    updateProfileImage: async (userId, profileImageUrl) => {
+        await db.execute(
+            'UPDATE users SET profile_image_url = ? WHERE user_id = ?',
+            [profileImageUrl, userId],
+        );
 
-        user.profile_image = profileImage;
-        await writeUserFile(users);
-        return user;
+        const [rows] = await db.execute(
+            'SELECT user_id, username, email, profile_image_url FROM users WHERE user_id = ?',
+            [userId],
+        );
+        return rows[0] || null;
     },
 };
 

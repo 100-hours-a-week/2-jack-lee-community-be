@@ -1,8 +1,22 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
+// testdb.js
 
-// 현재 파일 경로와 디렉토리 경로 초기화 (ES 모듈 호환)
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Import required modules
+import db from './config/dbConfig.js';
 
-console.log(__filename, __dirname);
+(async () => {
+    try {
+        // Attempt a simple connection test
+        const [rows] = await db.execute(
+            'SELECT COUNT(*) as count FROM users WHERE username = "john_doe"',
+        );
+        console.log(rows[0].count > 0);
+        console.log('Database connected successfully!');
+        console.log('Test Query Result:', rows);
+    } catch (err) {
+        console.error('Database connection failed:', err.message);
+    } finally {
+        // Close the database pool
+        await db.end();
+        console.log('Database connection closed.');
+    }
+})();
