@@ -12,9 +12,9 @@ const userModel = {
     // 사용자 인증
     validateUser: async (email, password) => {
         const user = await userModel.getUserByEmail(email);
-        if (user && user.password === hashPassword(password)) {
-            const { password, ...userWithoutPassword } = user;
-            return userWithoutPassword;
+
+        if (user) {
+            return user;
         }
         return null;
     },

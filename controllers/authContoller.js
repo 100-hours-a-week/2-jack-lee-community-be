@@ -7,12 +7,20 @@ const authController = {
             const { email, password } = req.body;
             const user = await userModel.validateUser(email, password);
 
+            if (!user) {
+                return res.status(401).json({
+                    message:
+                        '인증 실패: 이메일 또는 비밀번호가 일치하지 않습니다.',
+                });
+            }
+
             if (user) {
                 // 세션에 사용자 정보 저장
                 req.session.user = {
-                    userId: user.id,
+                    userId: user.user_id,
                     email: user.email,
-                    nickname: user.nickname,
+                    username: user.username,
+                    profileImage: user.profile_image_url,
                 };
 
                 // 쿠키 설정 (1시간 유효)
@@ -51,9 +59,7 @@ const authController = {
 
     // 인증 여부 확인 미들웨어
     isAuthenticated: (req, res, next) => {
-        const sessionID = req.sessionID;
-
-        if (!sessionID) {
+        if (!req.session.user) {
             // 인증되지 않은 경우
             return res.status(401).json({ message: '인증되지 않았습니다.' });
         }
@@ -66,7 +72,7 @@ const authController = {
     getProfile: async (req, res) => {
         try {
             // 세션에 사용자 정보가 있는지 확인
-            if (!req.session?.user?.userId) {
+            if (!req.session?.user) {
                 return res
                     .status(401)
                     .json({ message: '로그인이 필요합니다.' });

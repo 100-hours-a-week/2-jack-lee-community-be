@@ -36,7 +36,6 @@ router.get('/check-session', (req, res) => {
 // 세션 ID 확인 라우터
 // 로그인 상태가 아니더라도 기본적으로 session 객체에 접근하면 id가 생성됨
 router.get('/check-session-id', (req, res) => {
-    console.log(req.session);
     if (req.session.user) {
         res.json({
             message: '로그인 상태입니다.',

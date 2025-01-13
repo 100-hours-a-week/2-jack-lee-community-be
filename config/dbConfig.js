@@ -10,6 +10,7 @@ const dbConfig = {
     connectionLimit: 10, // 풀에 유지할 최대 연결 수 (기본값: 10)
     waitForConnections: true, // 연결 요청이 초과되었을 때 대기 여부
     queueLimit: 0, // 대기열에 넣을 요청의 최대 수 (0은 무제한)
+    dateStrings: true, // 날짜 필드를 문자열로 반환
 };
 
 const db = mysql.createPool(dbConfig);

@@ -7,6 +7,8 @@ import { fileURLToPath } from 'url';
 import userRoutes from './routes/userRoutes.js';
 import postRoutes from './routes/postRoute.js';
 import authRoutes from './routes/authRoute.js';
+import commentRoutes from './routes/commentRoute.js';
+import likesRoutes from './routes/likesRoute.js';
 
 // 미들웨어
 import sessionMiddleware from './middlewares/sessionMiddleware.js';
@@ -37,6 +39,8 @@ app.use(sessionMiddleware);
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/auths', authRoutes);
+app.use('/api/comments', commentRoutes);
+app.use('/api/likes', likesRoutes);
 
 // 4. 정적 파일 서빙
 const frontendPath = path.join(__dirname, '../2-jack-lee-community-fe/public');
