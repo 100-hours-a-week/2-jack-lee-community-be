@@ -4,17 +4,106 @@ import db from '../config/dbConfig.js';
 const postModel = {
     // 모든 게시글 조회
     getAllPosts: async () => {
-        const [rows] = await db.execute('SELECT * FROM posts');
-        return rows;
+        const query = `
+        SELECT
+            posts.post_id,
+            posts.post_title,
+            posts.post_content,
+            posts.post_image_url,
+            posts.post_image_name,
+            posts.created_at,
+            posts.post_views,
+            users.user_id AS author_id,
+            users.username AS author_name,
+            users.profile_image_url AS author_profile_image,
+            COUNT(DISTINCT likes.user_id) AS post_likes,
+            COUNT(DISTINCT comments.comment_id) AS post_comments
+        FROM
+            posts
+        LEFT JOIN
+            users ON posts.author_id = users.user_id
+        LEFT JOIN
+            likes ON posts.post_id = likes.post_id
+        LEFT JOIN
+            comments ON posts.post_id = comments.post_id
+        GROUP BY
+            posts.post_id, 
+            users.user_id, 
+            users.username, 
+            users.profile_image_url
+    `;
+
+        const [rows] = await db.execute(query);
+
+        // 데이터 맵핑 처리
+        return rows.map((row) => ({
+            post_id: row.post_id,
+            post_title: row.post_title,
+            post_content: row.post_content,
+            post_image_url: row.post_image_url,
+            post_image_name: row.post_image_name,
+            created_at: row.created_at,
+            post_views: row.post_views,
+            post_likes: row.post_likes, // 좋아요 수 추가
+            post_comments: row.post_comments, // 댓글 수 추가
+            author: {
+                user_id: row.author_id,
+                username: row.author_name,
+                profile_image: row.author_profile_image,
+            },
+        }));
     },
 
     // 게시글 ID로 검색
     getPostById: async (postId) => {
-        const [rows] = await db.execute(
-            'SELECT * FROM posts WHERE post_id = ?',
-            [postId],
-        );
-        return rows[0] || null;
+        const query = `
+            SELECT
+                posts.post_id,
+                posts.post_title,
+                posts.post_content,
+                posts.post_image_url,
+                posts.post_image_name,
+                posts.created_at,
+                posts.post_views,
+                users.user_id AS author_id,
+                users.username AS author_name,
+                users.profile_image_url AS author_profile_image,
+                COUNT(DISTINCT likes.user_id) AS post_likes
+            FROM
+                posts
+            LEFT JOIN
+                users ON posts.author_id = users.user_id
+            LEFT JOIN
+                likes ON posts.post_id = likes.post_id
+            WHERE
+                posts.post_id = ?
+            GROUP BY
+                posts.post_id, 
+                users.user_id, 
+                users.username, 
+                users.profile_image_url
+        `;
+
+        const [rows] = await db.execute(query, [postId]);
+        if (rows.length === 0) {
+            return null; // 해당 post_id에 해당하는 게시글이 없을 경우 null 반환
+        }
+        const row = rows[0];
+        return {
+            post_id: row.post_id,
+            post_title: row.post_title,
+            post_content: row.post_content,
+            post_image_url: row.post_image_url,
+            post_image_name: row.post_image_name,
+            created_at: row.created_at,
+            post_views: row.post_views,
+            post_likes: row.post_likes, // 좋아요 수 추가
+            author: {
+                user_id: row.author_id,
+                username: row.author_name,
+                profile_image: row.author_profile_image,
+            },
+        };
     },
 
     // 새 게시글 추가

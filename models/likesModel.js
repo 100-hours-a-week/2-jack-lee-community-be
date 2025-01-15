@@ -1,8 +1,21 @@
 import db from '../config/dbConfig.js';
 
+const postExists = async (postId) => {
+    const [rows] = await db.execute('SELECT 1 FROM posts WHERE post_id = ?', [
+        postId,
+    ]);
+    return rows.length > 0;
+};
+
 const likesModel = {
     // 좋아요 추가 및 취소
     toggleLike: async (postId, userId, created_at) => {
+        // 게시글 존재 여부 확인
+        const exists = await postExists(postId);
+        if (!exists) {
+            throw new Error('Invalid post_id: The post does not exist.');
+        }
+
         const [rows] = await db.execute(
             'SELECT * FROM likes WHERE post_id = ? AND user_id = ?',
             [postId, userId],

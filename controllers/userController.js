@@ -131,6 +131,7 @@ const deleteUser = async (req, res) => {
         const isDeleted = await userModel.deleteUser(id);
 
         if (isDeleted) {
+            req.session.destroy(); // 세션 삭제
             res.status(200).json({
                 message: `User with ID ${id} deleted successfully`,
             });

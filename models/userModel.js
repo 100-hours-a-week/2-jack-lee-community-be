@@ -11,18 +11,28 @@ const hashPassword = (password) => {
 const userModel = {
     // 사용자 인증
     validateUser: async (email, password) => {
+        // 이메일로 사용자 조회
         const user = await userModel.getUserByEmail(email);
 
         if (user) {
-            return user;
+            // 입력된 비밀번호를 해싱하여 저장된 비밀번호와 비교
+            const hashedInputPassword = hashPassword(password);
+
+            if (user.password === hashedInputPassword) {
+                // 비밀번호 일치 - 사용자 인증 성공
+                const { password, ...userWithoutPassword } = user; // 비밀번호 제거 후 반환
+                return userWithoutPassword;
+            }
         }
+
+        // 사용자 없음 또는 비밀번호 불일치 - 인증 실패
         return null;
     },
 
     // 모든 사용자 조회
     getAllUsers: async () => {
         const [rows] = await db.execute(
-            'SELECT user_id, username, email, profile_image_url FROM users',
+            'SELECT user_id, username, email, profile_image_url FROM users WHERE is_deleted = 0',
         );
         return rows;
     },
@@ -30,7 +40,7 @@ const userModel = {
     // ID로 사용자 조회
     getUserById: async (id) => {
         const [rows] = await db.execute(
-            'SELECT user_id, username, email, profile_image_url FROM users WHERE user_id = ?',
+            'SELECT user_id, email, password, username, profile_image_url FROM users WHERE user_id = ? AND is_deleted = 0',
             [id],
         );
         return rows[0] || null;
@@ -39,7 +49,7 @@ const userModel = {
     // 이메일로 사용자 조회
     getUserByEmail: async (email) => {
         const [rows] = await db.execute(
-            'SELECT user_id, username, email, profile_image_url FROM users WHERE email = ?',
+            'SELECT user_id, email, password, username, profile_image_url FROM users WHERE email = ? AND is_deleted = 0',
             [email],
         );
         return rows[0] || null;
@@ -83,7 +93,7 @@ const userModel = {
     // 사용자 삭제
     deleteUser: async (id) => {
         const [result] = await db.execute(
-            'DELETE FROM users WHERE user_id = ?',
+            'UPDATE users SET is_deleted = 1 WHERE user_id = ?',
             [id],
         );
         return result.affectedRows > 0;
@@ -105,7 +115,7 @@ const userModel = {
         const sanitizedEmail = email.trim().replace(/['"]+/g, ''); // 공백 및 따옴표 제거
 
         const [rows] = await db.execute(
-            'SELECT COUNT(*) as count FROM users WHERE email = ?',
+            'SELECT COUNT(*) as count FROM users WHERE email = ? AND is_deleted = 0',
             [sanitizedEmail],
         );
         return rows[0].count > 0;
@@ -116,7 +126,7 @@ const userModel = {
         const sanitizedUsername = username.trim().replace(/['"]+/g, ''); // 공백 및 따옴표 제거
 
         const [rows] = await db.execute(
-            'SELECT COUNT(*) as count FROM users WHERE username = ?',
+            'SELECT COUNT(*) as count FROM users WHERE username = ? AND is_deleted = 0',
             [sanitizedUsername],
         );
         return rows[0].count > 0;

@@ -111,8 +111,9 @@ const uploadPostImage = async (req, res) => {
 const updatePost = async (req, res) => {
     const { post_id } = req.params;
     const { post_title, post_content } = req.body;
+    console.log(post_title, post_content);
 
-    if (!post_title && !post_content) {
+    if (!post_title || !post_content) {
         return res.status(400).json({ message: 'Invalid input' });
     }
 
