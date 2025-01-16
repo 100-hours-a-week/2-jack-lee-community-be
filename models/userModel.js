@@ -1,10 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
-import crypto from 'crypto';
+import bcrypt from 'bcrypt';
 import db from '../config/dbConfig.js';
 
 // 비밀번호 해싱 함수
-const hashPassword = (password) => {
-    return crypto.createHash('sha256').update(password).digest('hex');
+const hashPassword = async (password) => {
+    const saltRounds = 10; // 작업 비용 (높을수록 안전하지만 느려짐)
+    return await bcrypt.hash(password, saltRounds);
+};
+
+// 비밀번호 검증 함수
+const verifyPassword = async (password, hashedPassword) => {
+    return await bcrypt.compare(password, hashedPassword);
 };
 
 // userModel 객체 리터럴
@@ -15,10 +21,10 @@ const userModel = {
         const user = await userModel.getUserByEmail(email);
 
         if (user) {
-            // 입력된 비밀번호를 해싱하여 저장된 비밀번호와 비교
-            const hashedInputPassword = hashPassword(password);
+            // 입력된 비밀번호와 저장된 해시된 비밀번호 비교
+            const isMatch = await verifyPassword(password, user.password);
 
-            if (user.password === hashedInputPassword) {
+            if (isMatch) {
                 // 비밀번호 일치 - 사용자 인증 성공
                 const { password, ...userWithoutPassword } = user; // 비밀번호 제거 후 반환
                 return userWithoutPassword;
@@ -58,7 +64,7 @@ const userModel = {
     // 새 사용자 추가
     addUser: async (newUser) => {
         newUser.user_id = uuidv4();
-        newUser.password = hashPassword(newUser.password);
+        newUser.password = await hashPassword(newUser.password); // 비밀번호 해싱
         delete newUser.re_password; // 비밀번호 확인 필드 제거
 
         await db.execute(
@@ -101,7 +107,7 @@ const userModel = {
 
     // 비밀번호 변경
     changePassword: async (id, newPassword) => {
-        const hashedPassword = hashPassword(newPassword);
+        const hashedPassword = await hashPassword(newPassword);
 
         const [result] = await db.execute(
             'UPDATE users SET password = ? WHERE user_id = ?',

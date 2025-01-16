@@ -16,6 +16,7 @@ import corsMiddleware from './middlewares/corsMiddleware.js';
 import loggerMiddleware from './middlewares/loggerMiddleware.js';
 import jsonInit from './middlewares/jsonInit.js';
 import isAuthenticated from './middlewares/isAuth.js';
+import queryLogger from './middlewares/queryLogger.js';
 
 // ES 모듈에서 __dirname과 __filename 설정
 const __filename = fileURLToPath(import.meta.url);
@@ -32,6 +33,7 @@ app.use(bodyParser.json());
 app.use(corsMiddleware);
 app.use(loggerMiddleware);
 app.use(sessionMiddleware); // 세션 미들웨어는 모든 경로에 적용
+app.use(queryLogger);
 
 // 3. 정적 파일 서빙
 const frontendPath = path.join(__dirname, '../2-jack-lee-community-fe/public');

@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise';
 import env from './dotenv.js'; // 환경 변수를 이미 로드한 모듈 가져오기
+import colors from 'colors';
 
 const dbConfig = {
     host: env.DB_HOST,
@@ -14,5 +15,16 @@ const dbConfig = {
 };
 
 const db = mysql.createPool(dbConfig);
+
+// 데이터베이스 연결 확인
+(async () => {
+    try {
+        const connection = await db.getConnection(); // 연결 풀에서 연결 가져오기
+        console.log('Connected to MySQL database'.green);
+        connection.release(); // 연결 반환
+    } catch (err) {
+        console.error('Database connection failed:'.red, err.message);
+    }
+})();
 
 export default db;
