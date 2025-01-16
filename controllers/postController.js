@@ -2,11 +2,39 @@ import postModel from '../models/postModel.js';
 import fs from 'fs';
 import formatDateTime from '../utils/utils.js';
 
-// 게시글 목록 가져오기
+// 게시글 목록 가져오기 (Cursor 기반 무한 스크롤)
 const getPostList = async (req, res) => {
     try {
-        const posts = await postModel.getAllPosts();
-        res.status(200).json({ status: 200, data: posts });
+        const { cursor, limit = 10 } = req.query;
+
+        // 페이지 크기를 숫자로 변환
+        const pageSize = parseInt(limit, 10);
+
+        // 유효성 검사
+        if (isNaN(pageSize) || pageSize <= 0) {
+            return res.status(400).json({
+                status: 400,
+                message: 'Invalid limit parameter.',
+            });
+        }
+
+        // 데이터베이스에서 게시글 가져오기
+        const { posts, nextCursor } = await postModel.getPostsAfterCursor(
+            cursor,
+            pageSize,
+        );
+
+        console.log('test: ', posts, nextCursor);
+
+        //const posts = await postModel.getAllPosts();
+
+        res.status(200).json({
+            status: 200,
+            data: {
+                posts,
+                nextCursor, // 다음 데이터를 가져올 때 사용할 커서
+            },
+        });
     } catch (error) {
         res.status(500).json({
             status: 500,

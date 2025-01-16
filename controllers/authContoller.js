@@ -33,6 +33,9 @@ const authController = {
                 res.json({
                     message: '로그인 성공(세션 저장)',
                     user,
+                    data: {
+                        sessionID: req.sessionID,
+                    },
                 });
             } else {
                 // 인증 실패 응답
@@ -53,7 +56,10 @@ const authController = {
             }
             // 쿠키 삭제 후 로그아웃 성공 응답
             res.clearCookie('session_id');
-            res.json({ message: '로그아웃 성공' });
+            res.json({
+                message: '로그아웃 성공',
+                data: null,
+            });
         });
     },
 
@@ -61,7 +67,9 @@ const authController = {
     isAuthenticated: (req, res, next) => {
         if (!req.session.user) {
             // 인증되지 않은 경우
-            return res.status(401).json({ message: '인증되지 않았습니다.' });
+            return res
+                .status(401)
+                .json({ status: 401, message: '인증되지 않았습니다.' });
         }
 
         // 인증된 경우 다음 미들웨어로 이동
