@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>API 요청 버튼</title>
+        <style>
+            body {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background-color: #f4f4f4;
+                font-family: Arial, sans-serif;
+            }
+
+            .btn {
+                padding: 15px 30px;
+                font-size: 18px;
+                color: white;
+                background-color: #007bff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                margin-bottom: 20px;
+            }
+
+            .btn:hover {
+                background-color: #0056b3;
+            }
+
+            #result {
+                width: 400px;
+                background: white;
+                padding: 15px;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                text-align: left;
+            }
+        </style>
+    </head>
+    <body>
+        <button class="btn" id="fetchDataBtn">데이터 요청</button>
+        <div id="result">데이터가 여기에 표시됩니다.</div>
+
+        <script>
+            document
+                .getElementById('fetchDataBtn')
+                .addEventListener('click', function () {
+                    fetch('https://jsonplaceholder.typicode.com/posts/1')
+                        .then((response) => {
+                            if (!response.ok) {
+                                throw new Error('네트워크 오류 발생!');
+                            }
+                            return response.json();
+                        })
+                        .then((data) => {
+                            document.getElementById('result').innerHTML = `
+                        <h3>제목: ${data.title}</h3>
+                        <p><strong>내용:</strong> ${data.body}</p>
+                        <p><strong>작성자 ID:</strong> ${data.userId}</p>
+                    `;
+                        })
+                        .catch((error) => {
+                            document.getElementById('result').innerHTML =
+                                `<p style="color: red;">오류 발생: ${error.message}</p>`;
+                        });
+                });
+        </script>
+    </body>
+</html>
