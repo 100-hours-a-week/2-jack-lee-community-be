@@ -1,9 +1,9 @@
 [
-    {
-        "email": "jack@naver.com",
-        "password": "1a3ba9cd96cfd5c6842f8fbec41478fdc4caf22008526972bd9563e7c6107908",
-        "nickname": "Jack",
-        "id": "740108ae-8c13-4d52-9c50-36ba4bfd1b09",
-        "profile_image": "http://localhost:3000/profile-images/profile_image-1735670609335-123573060.jpg"
-    }
+  {
+    "email": "qwer1234@gmail.com",
+    "password": "4a04d05a82d9c6fc293fd4f15af1d037757f7f6bd7555cbcc372a303df529eea",
+    "nickname": "Gumod",
+    "id": "1f889cf6-933e-4f91-bab8-ef87694b418d",
+    "profile_image": "http://localhost:3000/profile-images/profile_image-1736152879900-313416680.jpg"
+  }
 ]

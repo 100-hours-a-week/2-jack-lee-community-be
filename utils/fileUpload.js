@@ -1,6 +1,11 @@
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+// 현재 파일 경로와 디렉토리 경로 초기화 (ES 모듈 호환)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // 저장 경로를 동적으로 설정하는 함수
 const dynamicStorage = (folder) =>
@@ -43,4 +48,4 @@ const profileImageUpload = multer({
     fileFilter,
 });
 
-module.exports = { postImageUpload, profileImageUpload };
+export { postImageUpload, profileImageUpload };

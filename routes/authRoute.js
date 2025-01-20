@@ -1,9 +1,7 @@
-const express = require('express');
-const router = express.Router();
-const authController = require('../controllers/authContoller');
+import express from 'express';
+import authController from '../controllers/authContoller.js';
 
-// 회원가입 라우트
-// router.post('/register', authController.register);
+const router = express.Router();
 
 // 로그인 라우트
 router.post('/login', authController.login);
@@ -19,7 +17,7 @@ router.get(
 );
 
 // 세션 체크 라우터
-// req.session 은 현재 요청(Request)에 대한 세션 객체
+// req.session은 현재 요청(Request)에 대한 세션 객체
 router.get('/check-session', (req, res) => {
     if (req.session.user) {
         // 로그인 상태일 때
@@ -36,12 +34,9 @@ router.get('/check-session', (req, res) => {
 });
 
 // 세션 ID 확인 라우터
-// 로그인 상태가 아니더라도 기본적으로 session 객체에 접근하면 id가 생성됨.
+// 로그인 상태가 아니더라도 기본적으로 session 객체에 접근하면 id가 생성됨
 router.get('/check-session-id', (req, res) => {
-    console.log(req.session);
     if (req.session.user) {
-        // 현재 세션 객체 출력
-
         res.json({
             message: '로그인 상태입니다.',
             sessionId: req.sessionID,
@@ -53,13 +48,4 @@ router.get('/check-session-id', (req, res) => {
     }
 });
 
-// sessionStore는 세션 데이터 저장, 조회, 삭제를 담당
-// all(callback): 저장된 모든 세션 데이터를 조회합니다.
-// get(sessionID, callback): 특정 세션 ID의 세션 데이터를 가져옵니다.
-// destroy(sessionID, callback): 특정 세션을 삭제합니다.
-// set(sessionID, session, callback): 새로운 세션을 저장하거나 업데이트합니다.
-// router.get('/get-session', (req, res) => {
-
-// })
-
-module.exports = router;
+export default router;

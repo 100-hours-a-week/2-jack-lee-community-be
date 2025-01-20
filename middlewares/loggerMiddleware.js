@@ -1,5 +1,5 @@
-const morgan = require('morgan');
+import morgan from 'morgan';
 
 const loggerMiddleware = morgan('combined'); // HTTP 요청을 콘솔에 로깅
 
-module.exports = loggerMiddleware;
+export default loggerMiddleware;

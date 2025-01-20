@@ -10,4 +10,4 @@ const formatDateTime = () => {
     return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
 };
 
-module.exports = formatDateTime;
+export default formatDateTime;
