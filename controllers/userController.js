@@ -64,18 +64,18 @@ const getUserByEmail = async (req, res) => {
 // 새 사용자 추가
 const addUser = async (req, res) => {
     try {
-        const { email, password, re_password, nickname, profile_image } =
+        const { email, password, re_password, username, profile_image_url } =
             req.body;
 
-        if (!email || !password || !nickname || password !== re_password) {
+        if (!email || !password || !username || password !== re_password) {
             return res.status(400).json({ message: 'invalid_input' });
         }
 
         const newUser = await userModel.addUser({
             email,
             password,
-            nickname,
-            profile_image,
+            username,
+            profile_image_url,
         });
 
         res.status(201).json({
@@ -99,11 +99,11 @@ const updateUser = async (req, res) => {
             return res.status(400).json({ message: 'Invalid user ID' });
         }
 
-        const { nickname, profile_image } = req.body;
+        const { username, profile_image_url } = req.body;
 
         const updatedUser = await userModel.updateUser(id, {
-            nickname,
-            profile_image,
+            username,
+            profile_image_url,
         });
 
         if (updatedUser) {
@@ -131,6 +131,7 @@ const deleteUser = async (req, res) => {
         const isDeleted = await userModel.deleteUser(id);
 
         if (isDeleted) {
+            req.session.destroy(); // 세션 삭제
             res.status(200).json({
                 message: `User with ID ${id} deleted successfully`,
             });
@@ -202,27 +203,27 @@ const checkEmailDuplicate = async (req, res) => {
 };
 
 // 닉네임 중복 체크
-const checkNicknameDuplicate = async (req, res) => {
+const checkUsernameDuplicate = async (req, res) => {
     try {
-        const { nickname } = req.query;
+        const { username } = req.query;
 
-        if (!nickname) {
+        if (!username) {
             return res
                 .status(400)
-                .json({ available: false, message: 'Nickname is required' });
+                .json({ available: false, message: 'username is required' });
         }
 
-        const isDuplicate = await userModel.isNicknameDuplicate(nickname);
+        const isDuplicate = await userModel.isUsernameDuplicate(username);
 
         res.status(200).json({
             available: !isDuplicate,
             message: isDuplicate
-                ? 'Nickname already exists'
-                : 'Nickname is available',
+                ? 'username already exists'
+                : 'username is available',
         });
     } catch (error) {
         res.status(500).json({
-            message: 'Error checking nickname',
+            message: 'Error checking username',
             error: error.message,
         });
     }
@@ -254,7 +255,7 @@ const uploadProfileImage = async (req, res) => {
         }
 
         res.status(200).json({
-            message: 'profile_image_uploaded_successfully',
+            message: 'profile_image_url_uploaded_successfully',
             data: updatedProfile,
         });
     } catch (error) {
@@ -275,7 +276,7 @@ const userController = {
     deleteUser,
     changePassword,
     checkEmailDuplicate,
-    checkNicknameDuplicate,
+    checkUsernameDuplicate,
     uploadProfileImage,
 };
 

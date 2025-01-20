@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/check-email', userController.checkEmailDuplicate);
 
 // 닉네임 중복 체크
-router.get('/check-nickname', userController.checkNicknameDuplicate);
+router.get('/check-username', userController.checkUsernameDuplicate);
 
 // 모든 사용자 정보 조회
 router.get('', userController.getAllUsers);
