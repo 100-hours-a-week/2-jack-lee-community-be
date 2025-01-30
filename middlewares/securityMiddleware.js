@@ -1,6 +1,7 @@
 import helmet from 'helmet';
 
 const securityMiddleware = helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],

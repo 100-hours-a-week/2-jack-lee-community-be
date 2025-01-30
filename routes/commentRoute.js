@@ -5,24 +5,16 @@ import isLoggedIn from '../middlewares/isLoggedIn.js';
 const router = express.Router();
 
 // 댓글 작성
-router.post('/:post_id', isLoggedIn, commentController.addComment);
+router.post('/:post_id', commentController.addComment);
 
 // 특정 게시물에서 댓글 조회
 router.get('/:post_id', commentController.getCommentsByPost);
 
 // 댓글 수정
-router.patch(
-    '/:post_id/:comment_id',
-    isLoggedIn,
-    commentController.updateComment,
-);
+router.patch('/:post_id/:comment_id', commentController.updateComment);
 
 // 댓글 삭제
-router.delete(
-    '/:post_id/:comment_id',
-    isLoggedIn,
-    commentController.deleteComment,
-);
+router.delete('/:post_id/:comment_id', commentController.deleteComment);
 
 // 댓글 수 조회
 router.get('/:post_id/comments_count', commentController.getCommentsCount);

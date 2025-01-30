@@ -9,21 +9,20 @@ const router = express.Router();
 router.get('', postController.getPostList);
 
 //게시글 작성
-router.post('', isLoggedIn, postController.savePost);
+router.post('', postController.savePost);
 
 // 게시글 상세 정보 조회
 router.get('/:post_id', postController.getPostDetail);
 
 // 게시글 수정
-router.patch('/:post_id', isLoggedIn, postController.updatePost);
+router.patch('/:post_id', postController.updatePost);
 
 // 게시글 삭제
-router.delete('/:post_id', isLoggedIn, postController.deletePost);
+router.delete('/:post_id', postController.deletePost);
 
 // 게시글 이미지 업로드
 router.post(
     '/:post_id/post-image',
-    isLoggedIn,
     postImageUpload.single('post_image'),
     postController.uploadPostImage,
 );

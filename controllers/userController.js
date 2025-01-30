@@ -131,9 +131,35 @@ const deleteUser = async (req, res) => {
         const isDeleted = await userModel.deleteUser(id);
 
         if (isDeleted) {
-            req.session.destroy(); // 세션 삭제
-            res.status(200).json({
-                message: `User with ID ${id} deleted successfully`,
+            req.session.destroy((err) => {
+                if (err) {
+                    return res.status(500).json({ message: '세션 삭제 실패' });
+                }
+
+                // 현재 요청에서 세션을 다시 생성하지 않도록 함
+                req.session = null;
+
+                res.clearCookie('connect.sid', {
+                    httpOnly: true,
+                    sameSite: 'None',
+                    path: '/', // 쿠키를 설정할 때 사용한 path 유지
+                });
+
+                res.clearCookie('session_id', {
+                    httpOnly: true,
+                    sameSite: 'None',
+                    path: '/',
+                });
+
+                // ✅ Set-Cookie 헤더를 사용하여 강제 만료
+                res.setHeader('Set-Cookie', [
+                    'connect.sid=; HttpOnly; Path=/; Max-Age=0; SameSite=None; Secure',
+                    'session_id=; HttpOnly; Path=/; Max-Age=0; SameSite=None; Secure',
+                ]);
+
+                res.status(200).json({
+                    message: `User with ID ${id} deleted successfully`,
+                });
             });
         } else {
             res.status(404).json({ message: `User with ID ${id} not found` });

@@ -23,20 +23,37 @@ const authController = {
                     profileImage: user.profile_image_url,
                 };
 
-                // 쿠키 설정 (1시간 유효)
-                res.cookie('session_id', req.sessionID, {
-                    httpOnly: true,
-                    maxAge: 1000 * 60 * 60,
-                });
+                req.session.save((err) => {
+                    if (err) {
+                        console.error('Session save error:', err);
+                        return res
+                            .status(500)
+                            .json({ message: '세션 저장 오류' });
+                    }
 
-                // 로그인 성공 응답
-                res.json({
-                    message: '로그인 성공(세션 저장)',
-                    user,
-                    data: {
-                        sessionID: req.sessionID,
-                    },
+                    req.session.reload((err) => {
+                        if (err) {
+                            console.error('Session reload error:', err);
+                        }
+                        console.log('세션 저장 후:', req.session);
+                    });
+
+                    // 쿠키 설정 (1시간 유효)
+                    res.cookie('session_id', req.sessionID, {
+                        httpOnly: true,
+                        maxAge: 1000 * 60 * 60,
+                    });
+
+                    // 로그인 성공 응답
+                    res.json({
+                        message: '로그인 성공(세션 저장)',
+                        user,
+                        data: {
+                            sessionID: req.sessionID,
+                        },
+                    });
                 });
+                console.log('Session: ', req.session);
             } else {
                 // 인증 실패 응답
                 res.status(401).json({ message: '인증 실패' });
@@ -51,11 +68,28 @@ const authController = {
     logout: (req, res) => {
         req.session.destroy((err) => {
             if (err) {
-                // 세션 삭제 실패 처리
                 return res.status(500).json({ message: '로그아웃 실패' });
             }
-            // 쿠키 삭제 후 로그아웃 성공 응답
-            res.clearCookie('session_id');
+
+            // ✅ `connect.sid` 및 `session_id` 쿠키 삭제 (설정과 동일한 옵션 유지)
+            res.clearCookie('connect.sid', {
+                httpOnly: true,
+                sameSite: 'None',
+                path: '/', // 쿠키를 설정할 때 사용한 path 유지
+            });
+
+            res.clearCookie('session_id', {
+                httpOnly: true,
+                sameSite: 'None',
+                path: '/',
+            });
+
+            // ✅ Set-Cookie 헤더를 사용하여 강제 만료
+            res.setHeader('Set-Cookie', [
+                'connect.sid=; HttpOnly; Path=/; Max-Age=0; SameSite=None; Secure',
+                'session_id=; HttpOnly; Path=/; Max-Age=0; SameSite=None; Secure',
+            ]);
+
             res.json({
                 message: '로그아웃 성공',
                 data: null,

@@ -10,11 +10,7 @@ router.post('/login', authController.login);
 router.post('/logout', authController.logout);
 
 // 프로필 라우트 (인증된 사용자만)
-router.get(
-    '/profile',
-    authController.isAuthenticated,
-    authController.getProfile,
-);
+router.get('/profile', authController.getProfile);
 
 // 세션 체크 라우터
 // req.session은 현재 요청(Request)에 대한 세션 객체

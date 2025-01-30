@@ -24,10 +24,6 @@ const getPostList = async (req, res) => {
             pageSize,
         );
 
-        console.log('test: ', posts, nextCursor);
-
-        //const posts = await postModel.getAllPosts();
-
         res.status(200).json({
             status: 200,
             data: {
