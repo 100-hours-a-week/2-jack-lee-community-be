@@ -31,13 +31,6 @@ const authController = {
                             .json({ message: '세션 저장 오류' });
                     }
 
-                    req.session.reload((err) => {
-                        if (err) {
-                            console.error('Session reload error:', err);
-                        }
-                        console.log('세션 저장 후:', req.session);
-                    });
-
                     // 쿠키 설정 (1시간 유효)
                     res.cookie('session_id', req.sessionID, {
                         httpOnly: true,
@@ -53,7 +46,7 @@ const authController = {
                         },
                     });
                 });
-                console.log('Session: ', req.session);
+                
             } else {
                 // 인증 실패 응답
                 res.status(401).json({ message: '인증 실패' });

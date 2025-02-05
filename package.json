@@ -5,7 +5,8 @@
     "main": "back-server.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "nodemon back-server.js"
+        "start": "cross-env NODE_ENV=development node back-server.js",
+        "start:prod": "cross-env NODE_ENV=production node back-server.js"
     },
     "type": "module",
     "keywords": [],
@@ -37,6 +38,7 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.15.0",
+        "cross-env": "^7.0.3",
         "eslint": "^9.15.0",
         "globals": "^15.12.0",
         "nodemon": "^3.1.7"
