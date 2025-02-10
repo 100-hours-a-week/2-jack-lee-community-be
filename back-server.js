@@ -2,6 +2,13 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+// 환경 변수 로드
+const ENVIRONMENT = process.env.NODE_ENV || 'development';
+const envFile =
+    process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local';
+dotenv.config({ path: envFile });
 
 // 라우터
 import userRoutes from './routes/userRoutes.js';
@@ -25,7 +32,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.BASE_PORT;
 
 // JSON 및 폴더 초기화
 jsonInit();
@@ -58,5 +65,13 @@ app.use('/api/likes', likesRoutes);
 
 // 서버 실행
 app.listen(PORT, () => {
-    console.log(`✅ 백엔드 서버 실행: http://localhost:${PORT}`);
+    if (ENVIRONMENT === 'production') {
+        console.log(
+            `🚀 [PRODUCTION] 백엔드 서버 실행: http://${process.env.BASE_HOST}:${process.env.BASE_PORT}`,
+        );
+    } else {
+        console.log(
+            `✅ [DEVELOPMENT] 백엔드 서버 실행: http://${process.env.BASE_HOST}:${process.env.BASE_PORT}`,
+        );
+    }
 });
